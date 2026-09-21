@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --brand-lavender: #c8a2c8;
+    --brand-lavender-deep: #b28bb2;
+    --brand-lavender-soft: rgba(200, 162, 200, 0.18);
+    --brand-ivory: #f9f4f9;
+    --brand-ivory-alt: #f3eef3;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    @apply bg-paper text-ink-900 antialiased;
+    background: radial-gradient(circle at top, var(--brand-lavender-soft), transparent 32%),
+      linear-gradient(180deg, var(--brand-ivory) 0%, var(--brand-ivory-alt) 100%);
+  }
+
+  ::selection {
+    @apply bg-signal-200 text-ink-900;
+  }
+
+  :focus-visible {
+    outline: 2px solid theme("colors.signal.500");
+    outline-offset: 2px;
+  }
+
+  a,
+  button,
+  [role="button"] {
+    transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease,
+      box-shadow 180ms ease, transform 180ms ease;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-content px-6 md:px-8;
+  }
+
+  .section-pad {
+    @apply py-20 md:py-28;
+  }
+
+  .fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

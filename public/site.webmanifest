@@ -1,0 +1,10 @@
+{
+  "name": "Koraq Labs",
+  "short_name": "Koraq Labs",
+  "icons": [
+    { "src": "/icons/favicon.svg", "type": "image/svg+xml", "sizes": "any" }
+  ],
+  "theme_color": "#12151A",
+  "background_color": "#FAFAF8",
+  "display": "standalone"
+}
