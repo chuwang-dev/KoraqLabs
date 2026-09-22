@@ -1,35 +1,30 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 import { siteConfig } from "@/lib/config";
 
-const display = Instrument_Serif({
+const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["400"],
+  weight: ["400", "500", "600"],
   style: ["normal", "italic"],
   display: "swap",
 });
 
-const sans = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-sans",
-  display: "swap",
-});
-
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["400", "500"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default:
-      "Koraq Labs — Websites, Landing Pages & Web Applications for Nigerian Businesses",
+    default: "Koraq Labs — Websites That Help Nigerian Businesses Grow and Scale",
     template: "%s — Koraq Labs",
   },
   description: siteConfig.description,
@@ -37,15 +32,14 @@ export const metadata: Metadata = {
     "website development Nigeria",
     "website design Nigeria",
     "business website Nigeria",
-    "web application development Nigeria",
     "website design Abuja",
     "website developer Lagos",
+    "website development Lagos",
     "landing page design Nigeria",
     "web development company Nigeria",
-    "digital product studio Nigeria",
   ],
   openGraph: {
-    title: "Koraq Labs — Digital products, built to work.",
+    title: "Koraq Labs — Websites That Help Nigerian Businesses Grow and Scale",
     description: siteConfig.description,
     url: siteConfig.url,
     siteName: siteConfig.name,
@@ -54,15 +48,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Koraq Labs — Digital products, built to work.",
+    title: "Koraq Labs — Websites That Help Nigerian Businesses Grow and Scale",
     description: siteConfig.description,
   },
   icons: {
-    icon: [
-      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/icons/favicon-64.png", sizes: "64x64", type: "image/png" },
-    ],
-    apple: "/apple-icon.png",
+    icon: "/icons/favicon.svg",
   },
   manifest: "/site.webmanifest",
 };
@@ -71,12 +61,11 @@ const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html
-      lang="en"
-      className={`${display.variable} ${sans.variable} ${mono.variable}`}
-    >
+    <html lang="en" className={`${fraunces.variable} ${manrope.variable}`}>
       <body className="flex min-h-screen flex-col font-sans">
         {gaId ? (
           <>
@@ -85,11 +74,18 @@ export default function RootLayout({
               strategy="afterInteractive"
             />
             <Script id="ga-init" strategy="afterInteractive">
-              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');`}
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${gaId}');
+              `}
             </Script>
           </>
         ) : null}
-        {children}
+        <Navbar />
+        <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );

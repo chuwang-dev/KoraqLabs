@@ -1,25 +1,23 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/config";
-import { projects } from "@/lib/data";
+import { portfolioItems } from "@/lib/data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
-
   const staticRoutes = ["", "/services", "/work", "/about", "/faq", "/contact"].map(
     (route) => ({
       url: `${siteConfig.url}${route}`,
-      lastModified: now,
+      lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: route === "" ? 1 : 0.7,
     })
   );
 
-  const projectRoutes = projects.map((p) => ({
-    url: `${siteConfig.url}/work/${p.slug}`,
-    lastModified: now,
+  const workRoutes = portfolioItems.map((item) => ({
+    url: `${siteConfig.url}/work/${item.slug}`,
+    lastModified: new Date(),
     changeFrequency: "monthly" as const,
-    priority: p.status === "live" ? 0.6 : 0.4,
+    priority: 0.5,
   }));
 
-  return [...staticRoutes, ...projectRoutes];
+  return [...staticRoutes, ...workRoutes];
 }

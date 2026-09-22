@@ -1,11 +1,8 @@
 // Structured content for the site's data-driven sections.
-// Edit copy, pricing, services, and portfolio here — not inside components.
-
-/* ---------------------------------- Services --------------------------------- */
+// Editing copy, pricing, or portfolio items here updates every page that uses them.
 
 export type Service = {
   slug: string;
-  index: string;
   title: string;
   summary: string;
   description: string;
@@ -15,302 +12,169 @@ export type Service = {
 export const services: Service[] = [
   {
     slug: "business-websites",
-    index: "A",
     title: "Business Websites",
     summary:
-      "Professional websites designed to establish credibility, communicate value, and convert visitors into customers.",
+      "Professional multi-page websites designed to establish credibility and turn visitors into customers.",
     description:
-      "A complete website for your business — structured around how your customers actually search for, evaluate, and contact you. We handle information architecture, design, copy direction, and build, so the site works as a sales asset rather than a brochure.",
+      "A complete website for your business — home, about, services, and contact pages built around how your customers actually search for and reach you. We handle structure, copy direction, and design so the site works as a sales tool, not just a brochure.",
     deliverables: [
       "4–7 page structure",
       "Mobile-first responsive design",
       "Contact forms and WhatsApp integration",
       "Google Maps and business details",
-      "On-page SEO and metadata",
-      "Analytics setup",
+      "Basic on-page SEO",
     ],
   },
   {
     slug: "landing-pages",
-    index: "B",
     title: "Landing Pages",
     summary:
-      "Focused landing pages for products, campaigns, services, launches, and lead generation.",
+      "Focused pages designed for campaigns, products, services, and lead generation.",
     description:
-      "A single, focused page built to convert traffic from a specific campaign, product launch, or offer. No competing navigation, no distractions — one clear path from headline to enquiry.",
+      "A single, focused page built to convert traffic from a specific campaign, product launch, or offer. No distractions — just a clear path from headline to action.",
     deliverables: [
       "One-page conversion-focused layout",
       "Mobile-responsive design",
       "WhatsApp and contact CTAs",
-      "Campaign-ready metadata",
       "Basic SEO setup",
     ],
   },
   {
-    slug: "web-applications",
-    index: "C",
-    title: "Web Applications",
+    slug: "website-redesign",
+    title: "Website Redesign",
     summary:
-      "Custom web platforms, dashboards, portals, internal tools, and business systems.",
+      "Transform outdated websites into modern, responsive, and conversion-focused experiences.",
     description:
-      "When a marketing website isn't enough, we build software. Customer portals, admin dashboards, booking systems, internal tools — applications with real data, real users, and real business logic behind them.",
-    deliverables: [
-      "Custom functionality and business logic",
-      "Database design and integration",
-      "Authentication and user roles",
-      "Admin dashboards and reporting",
-      "API integrations",
-    ],
-  },
-  {
-    slug: "redesign-optimization",
-    index: "D",
-    title: "Website Redesign & Optimization",
-    summary:
-      "Modernize outdated websites — improving user experience, responsiveness, performance, and conversion.",
-    description:
-      "If your current website looks dated, loads slowly, or breaks on phones, we rebuild it with the same purpose but modern structure, performance, and design — preserving the content and search value you've already built.",
+      "If your current website looks dated, loads slowly, or doesn't work well on phones, we rebuild it with the same content and purpose but modern structure, design, and performance.",
     deliverables: [
       "Audit of your current website",
       "Modern, responsive rebuild",
-      "Performance and Core Web Vitals work",
-      "Conversion and UX improvements",
-      "SEO value preserved where possible",
+      "Improved page speed",
+      "Preserved content and SEO value where possible",
+    ],
+  },
+  {
+    slug: "hosting-deployment",
+    title: "Hosting & Deployment",
+    summary:
+      "Reliable deployment, domain configuration, SSL, performance monitoring, and ongoing maintenance.",
+    description:
+      "Once your website is built, we handle getting it live — domain setup, SSL, hosting configuration, and ongoing monitoring — so it stays fast and available.",
+    deliverables: [
+      "Domain connection and SSL",
+      "Production deployment",
+      "Uptime and performance monitoring",
+      "Optional ongoing maintenance",
     ],
   },
 ];
 
-export type SupportService = {
-  title: string;
-  description: string;
-};
-
-export const supportServices: SupportService[] = [
-  {
-    title: "Hosting & Deployment",
-    description: "Production deployment, environment setup, and release pipelines.",
-  },
-  {
-    title: "Domain & SSL Configuration",
-    description: "Domain connection, DNS records, and certificate setup.",
-  },
-  {
-    title: "Website Maintenance",
-    description: "Ongoing updates, content changes, and technical support.",
-  },
-  {
-    title: "API Integrations",
-    description: "Connecting payments, messaging, CRMs, and third-party services.",
-  },
-  {
-    title: "Custom Business Automation",
-    description: "Replacing manual, repetitive processes with software that runs them.",
-  },
-];
-
-/* ------------------------------- Value props --------------------------------- */
-
-export type ValueProp = {
-  number: string;
-  title: string;
-  description: string;
-};
-
-export const valueProps: ValueProp[] = [
-  {
-    number: "01",
-    title: "Business First",
-    description:
-      "Every project starts with understanding the business, customers, and desired outcome.",
-  },
-  {
-    number: "02",
-    title: "Built for Mobile",
-    description:
-      "Designed around how Nigerian customers actually access the internet.",
-  },
-  {
-    number: "03",
-    title: "Fast & Modern",
-    description:
-      "Modern technologies, responsive interfaces, performance-focused development.",
-  },
-  {
-    number: "04",
-    title: "Built to Grow",
-    description:
-      "Start with a website and evolve into a full digital product when your business needs it.",
-  },
-];
-
-/* --------------------------------- Portfolio --------------------------------- */
-
-export type ProjectStatus = "live" | "demo";
-
-export type Project = {
-  slug: string;
+export type Industry = {
   name: string;
-  industry: string;
-  type: string;
-  status: ProjectStatus;
+};
+
+export const industries: Industry[] = [
+  { name: "Healthcare" },
+  { name: "Real Estate" },
+  { name: "Hospitality" },
+  { name: "Retail" },
+  { name: "Automotive" },
+  { name: "Professional Services" },
+];
+
+export type PortfolioItem = {
+  slug: string;
+  category: string;
+  name: string;
   description: string;
-  longDescription: string;
   technologies: string[];
+  isPlaceholder: boolean;
   liveUrl?: string;
   image?: string;
-  highlights: string[];
 };
 
-export const projects: Project[] = [
+export const portfolioItems: PortfolioItem[] = [
   {
     slug: "casifla",
+    category: "Restaurant Website",
     name: "Casifla",
-    industry: "Hospitality",
-    type: "Restaurant Website",
-    status: "live",
     description:
       "A refined fine-dining website experience designed to showcase the restaurant, guide guests through its menu, and encourage reservations.",
-    longDescription:
-      "Casifla needed a website that carried the atmosphere of the restaurant itself — considered, warm, and unhurried — while making the practical things easy: seeing the menu, understanding the space, and making a reservation. The result is a focused site that treats the menu as the centrepiece rather than an afterthought.",
     technologies: ["HTML", "CSS", "JavaScript"],
+    isPlaceholder: false,
     liveUrl: "https://gitops-infrastructure.onrender.com",
     image: "/images/casifla-landing.png",
-    highlights: [
-      "Menu-led structure built around how guests browse",
-      "Reservation prompts placed at natural decision points",
-      "Fully responsive across phones and tablets",
-    ],
   },
   {
     slug: "autoforge",
+    category: "Automotive Website",
     name: "Autoforge",
-    industry: "Automotive",
-    type: "Automotive Website",
-    status: "live",
     description:
       "A focused auto-parts and repair website that helps dealers, fleets, and drivers explore parts, discover services, and place enquiries through WhatsApp.",
-    longDescription:
-      "Autoforge serves three distinct audiences — individual drivers, fleet operators, and dealers — each arriving with different questions. The site organises parts and services so each group can find what applies to them quickly, then routes every enquiry into WhatsApp, where this market actually prefers to transact.",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
+    isPlaceholder: false,
     liveUrl: "https://casi-check.vercel.app/",
     image: "/images/autoforge-landing.png",
-    highlights: [
-      "Parts and services organised by audience",
-      "WhatsApp-first enquiry flow",
-      "Built on Next.js for speed and SEO",
-    ],
   },
   {
     slug: "demo-clinic-site",
-    name: "Healthcare Practice",
-    industry: "Healthcare",
-    type: "Business Website",
-    status: "demo",
+    category: "Business Website",
+    name: "Demo — Healthcare Practice",
     description:
       "A demo business website concept for a healthcare practice, showing booking, services, and location pages structured for a Nigerian clinic.",
-    longDescription:
-      "A concept exploring how a Nigerian clinic might structure its online presence: clear service listings, practitioner profiles, visiting information, and a booking path that works as well on a phone as on a desktop.",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
-    highlights: [
-      "Appointment booking flow",
-      "Practitioner and service pages",
-      "Location and visiting-hours structure",
-    ],
+    isPlaceholder: true,
   },
   {
     slug: "demo-restaurant-landing",
-    name: "Restaurant Launch Page",
-    industry: "Hospitality",
-    type: "Landing Page",
-    status: "demo",
+    category: "Landing Page",
+    name: "Demo — Restaurant Launch Page",
     description:
       "A demo landing page concept built for a restaurant opening, focused on menu highlights, location, and reservation requests.",
-    longDescription:
-      "A single-page concept for a restaurant opening — built to do one job well: turn campaign traffic into reservations, with menu highlights, location, and an enquiry form on one scroll.",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
-    highlights: [
-      "Single-scroll conversion structure",
-      "Menu highlights and opening details",
-      "Reservation request form",
-    ],
+    isPlaceholder: true,
   },
   {
     slug: "demo-realty-site",
-    name: "Real Estate Agency",
-    industry: "Real Estate",
-    type: "Business Website",
-    status: "demo",
+    category: "Business Website",
+    name: "Demo — Real Estate Agency",
     description:
       "A demo business website concept for a real estate agency, structured around listings, agent profiles, and inquiry forms.",
-    longDescription:
-      "A concept for an agency website where listings are the product: filterable property cards, agent profiles that build trust, and enquiry forms attached to every listing.",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
-    highlights: [
-      "Listing-led information architecture",
-      "Agent profiles and contact routing",
-      "Per-listing enquiry forms",
-    ],
+    isPlaceholder: true,
   },
 ];
-
-export const liveProjects = projects.filter((p) => p.status === "live");
-export const demoProjects = projects.filter((p) => p.status === "demo");
-
-/* ---------------------------------- Process ---------------------------------- */
 
 export type ProcessStep = {
   number: string;
   title: string;
   description: string;
-  optional?: boolean;
 };
 
 export const processSteps: ProcessStep[] = [
   {
     number: "01",
     title: "Discover",
-    description: "Understand your business, customers, goals, and requirements.",
+    description: "We understand your business, customers, and goals.",
   },
   {
     number: "02",
     title: "Design",
-    description: "Create the structure, visual direction, and user experience.",
+    description:
+      "We create the visual direction and structure before development.",
   },
   {
     number: "03",
     title: "Build",
-    description: "Develop the website or digital product using modern technologies.",
+    description: "We develop a fast, responsive, and reliable website.",
   },
   {
     number: "04",
     title: "Launch",
     description:
-      "Deploy, configure the domain, optimize the experience, and hand over the project.",
-  },
-  {
-    number: "05",
-    title: "Support",
-    description: "Maintenance, updates, improvements, and technical support.",
-    optional: true,
+      "We deploy your website, connect your domain, and make sure everything works.",
   },
 ];
-
-/* --------------------------------- Industries -------------------------------- */
-
-export const industries = [
-  "Healthcare",
-  "Real Estate",
-  "Hospitality",
-  "Retail",
-  "Automotive",
-  "Professional Services",
-  "Education",
-  "Startups",
-  "Financial Services",
-  "Logistics",
-];
-
-/* ---------------------------------- Packages --------------------------------- */
 
 export type PricingPackage = {
   slug: string;
@@ -319,8 +183,11 @@ export type PricingPackage = {
   audience: string;
   priceLabel: string;
   features: string[];
+  ctaLabel: string;
+  ctaHref: string;
 };
 
+// Prices are configurable here rather than hard-coded across the UI.
 export const pricingPackages: PricingPackage[] = [
   {
     slug: "starter",
@@ -330,19 +197,22 @@ export const pricingPackages: PricingPackage[] = [
     priceLabel: "From ₦250,000",
     features: [
       "One-page website",
-      "Mobile responsive",
+      "Mobile-responsive design",
       "WhatsApp CTA",
       "Contact form",
       "Basic SEO",
       "Domain connection",
       "Deployment",
     ],
+    ctaLabel: "Get Started",
+    ctaHref: "/contact",
   },
   {
     slug: "business",
     name: "Business",
     tagline: "Business Website",
-    audience: "For established businesses that need a full online presence.",
+    audience:
+      "For established businesses that need a professional online presence.",
     priceLabel: "From ₦750,000",
     features: [
       "4–7 pages",
@@ -355,164 +225,97 @@ export const pricingPackages: PricingPackage[] = [
       "Domain connection",
       "Deployment",
     ],
+    ctaLabel: "Get Started",
+    ctaHref: "/contact",
   },
   {
     slug: "custom",
     name: "Custom",
-    tagline: "Web Application / Digital Product",
-    audience: "For businesses with specific functional requirements.",
-    priceLabel: "Custom pricing",
+    tagline: "Custom Website",
+    audience: "For businesses with specific requirements.",
+    priceLabel: "Talk to us",
     features: [
       "Custom functionality",
-      "Database integration",
+      "Database integration where required",
       "API integrations",
-      "Authentication",
+      "Authentication where required",
       "Advanced forms",
       "Admin functionality",
       "Custom deployment",
     ],
+    ctaLabel: "Talk to Us",
+    ctaHref: "/contact",
   },
 ];
 
-/* --------------------------------- Technology -------------------------------- */
-
-export type TechGroup = {
-  label: string;
-  items: string[];
-};
-
-export const techGroups: TechGroup[] = [
-  { label: "Frontend", items: ["Next.js", "React", "TypeScript", "Tailwind CSS"] },
-  { label: "Backend", items: ["Node.js", "REST APIs", "PostgreSQL"] },
-  { label: "Infrastructure", items: ["GitHub", "Vercel", "Cloud platforms", "Docker"] },
-  { label: "Integrations", items: ["Payment gateways", "WhatsApp", "CMS platforms", "Analytics"] },
-];
-
-/* ------------------------------- Growth ladder ------------------------------- */
-
-export type GrowthStage = {
-  stage: string;
+export type WhyPoint = {
   title: string;
   description: string;
 };
 
-export const growthStages: GrowthStage[] = [
+export const whyPoints: WhyPoint[] = [
   {
-    stage: "Start",
-    title: "Landing Page",
-    description: "One focused page to establish presence and capture enquiries.",
+    title: "Built for Business",
+    description:
+      "We don't just make websites look good. We build them around your business goals.",
   },
   {
-    stage: "Grow",
-    title: "Business Website",
-    description: "A full site that carries your services, credibility, and customer paths.",
+    title: "Mobile First",
+    description:
+      "Your customers are on their phones. Your website should work perfectly there.",
   },
   {
-    stage: "Scale",
-    title: "Web Application",
-    description: "Portals, dashboards, and systems that serve customers and staff.",
+    title: "Fast & Modern",
+    description:
+      "We use modern technologies to create fast, responsive digital experiences.",
   },
   {
-    stage: "Automate",
-    title: "Digital Business System",
-    description: "Software that runs the repetitive parts of the business for you.",
+    title: "Built to Grow",
+    description:
+      "Your website can evolve into a larger digital product as your business grows.",
   },
 ];
 
-/* ---------------------------------- Company ---------------------------------- */
-
-export const company = {
-  about: [
-    "Koraq Labs is a Nigerian technology studio focused on building practical digital products for businesses.",
-    "We believe technology should solve business problems, not simply look impressive.",
-    "From a high-converting landing page to a complete business platform, we combine strategy, design, and software development to create digital experiences that businesses can actually use and grow with.",
-  ],
-  mission:
-    "To give Nigerian businesses digital products that are genuinely useful — built with the same standard of craft as the software they use every day.",
-  vision:
-    "To become a long-term technology partner for businesses across Nigeria, growing with them from their first website to the systems that run their operations.",
-  values: [
-    {
-      title: "Simplicity",
-      description: "The simplest solution that solves the problem is the right one.",
-    },
-    {
-      title: "Reliability",
-      description: "Things we build should work, keep working, and be easy to maintain.",
-    },
-    {
-      title: "Practical Innovation",
-      description: "New technology is worth using when it makes a real difference.",
-    },
-    {
-      title: "Business Impact",
-      description: "Design and code are judged by what they do for the business.",
-    },
-    {
-      title: "Continuous Improvement",
-      description: "Every project should be better made than the one before it.",
-    },
-  ],
+export type FaqItem = {
+  question: string;
+  answer: string;
 };
-
-/* ------------------------------------ FAQ ------------------------------------ */
-
-export type FaqItem = { question: string; answer: string };
 
 export const faqItems: FaqItem[] = [
   {
     question: "How long does a website take?",
     answer:
-      "Most standard business websites can be completed within 1–2 weeks depending on the scope and how quickly content is available. Landing pages are usually faster; web applications depend entirely on the functionality required.",
+      "Most standard business websites can be completed within 1–2 weeks depending on the scope and availability of content.",
   },
   {
-    question: "Do you build websites for new businesses?",
+    question: "Do you provide domains and hosting?",
     answer:
-      "Yes. We can help structure the website even if your business is just getting started, including working out what the site needs to say before it's written.",
+      "Yes. We can help configure your domain, hosting, SSL, and deployment.",
   },
   {
-    question: "Can you redesign an existing website?",
-    answer:
-      "Yes. We audit what you have, keep what's working, and rebuild the rest with modern structure, performance, and design.",
+    question: "Can you redesign my existing website?",
+    answer: "Yes.",
   },
   {
-    question: "Do you provide domain and hosting setup?",
+    question: "Can you build a website for a new business?",
     answer:
-      "Yes. We can configure your domain, DNS, SSL, hosting, and deployment as part of the project.",
+      "Yes. We can help structure the website even if your business is just getting started.",
   },
   {
     question: "Will my website work on mobile?",
-    answer:
-      "Yes. Everything we build is designed mobile-first, because that's how most Nigerian customers will reach you.",
+    answer: "Yes. All websites should be designed responsively.",
   },
   {
-    question: "Can you maintain the website after launch?",
+    question: "Can you maintain my website after launch?",
     answer:
-      "Yes. Maintenance, updates, and technical support are available as an optional ongoing service.",
-  },
-  {
-    question: "Can you integrate WhatsApp?",
-    answer:
-      "Yes. WhatsApp enquiry buttons and pre-filled message links are standard on most of the sites we build.",
+      "Yes. Maintenance and support is available as an optional recurring service.",
   },
   {
     question: "Can you build web applications?",
     answer:
-      "Yes. For projects needing functionality beyond a marketing website — dashboards, portals, booking systems, internal tools — we develop custom web applications.",
-  },
-  {
-    question: "How much does a website cost?",
-    answer:
-      "Landing pages start from ₦250,000 and business websites from ₦750,000. Web applications and custom digital products are quoted per project, based on the functionality involved.",
-  },
-  {
-    question: "How do I start a project?",
-    answer:
-      "Send us your details through the enquiry form or message us on WhatsApp. We'll come back with questions, a recommended approach, and next steps.",
+      "Yes, for projects requiring functionality beyond a standard marketing website, Koraq Labs can develop custom web applications.",
   },
 ];
-
-/* ---------------------------------- Form data -------------------------------- */
 
 export const budgetRanges = [
   "₦100,000 – ₦250,000",
@@ -534,7 +337,6 @@ export const businessTypes = [
   "Retail",
   "Consulting",
   "Startup",
-  "Financial services",
   "Event planning",
   "Other",
 ];
@@ -542,7 +344,6 @@ export const businessTypes = [
 export const projectNeeds = [
   "New business website",
   "Landing page",
-  "Web application",
   "Website redesign",
   "Hosting & deployment help",
   "Not sure yet",
