@@ -1,7 +1,8 @@
 "use server";
 
 import { validateContactForm, type ContactFormValues } from "@/lib/validations";
-import { siteConfig } from "@/lib/config";
+import { sendContactEmail } from "@/lib/mailer";
+import { insertLead } from "@/lib/admin-data";
 
 export type ContactActionState = {
   status: "idle" | "success" | "error";
@@ -46,56 +47,37 @@ export async function submitContactForm(
     };
   }
 
-  const apiKey = process.env.EMAIL_API_KEY;
-  const to = process.env.EMAIL_TO ?? siteConfig.email;
-  const from = process.env.EMAIL_FROM ?? "Koraq Labs <onboarding@koraqlabs.com>";
-
-  const subject = `New project inquiry — ${values.businessName}`;
-  const body = [
-    `Name: ${values.name}`,
-    `Business: ${values.businessName}`,
-    `Email: ${values.email}`,
-    `Phone/WhatsApp: ${values.phone}`,
-    `Business type: ${values.businessType}`,
-    `What they need: ${values.need}`,
-    `Current website: ${values.currentWebsite || "None"}`,
-    `Budget: ${values.budget}`,
-    "",
-    "Project description:",
-    values.description,
-  ].join("\n");
+  // Best-effort: record the lead even if the notification email fails, and
+  // vice versa — a DB hiccup should never be the reason a real inquiry is
+  // lost, and a slow DB should never block a visitor's confirmation.
+  insertLead({
+    name: values.name,
+    businessName: values.businessName,
+    email: values.email,
+    phone: values.phone,
+    businessType: values.businessType,
+    need: values.need,
+    currentWebsite: values.currentWebsite,
+    budget: values.budget,
+    description: values.description,
+    source: getString(formData, "source") || "direct",
+    landingPage: getString(formData, "landingPage") || undefined,
+  }).catch((error) => {
+    console.error("Failed to store lead in database:", error);
+  });
 
   try {
-    if (apiKey) {
-      // Uses Resend's HTTP API directly via fetch, so no extra dependency is
-      // required. Swap the endpoint/body shape here if using a different
-      // provider.
-      const response = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from,
-          to,
-          subject,
-          text: body,
-          reply_to: values.email,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Email provider responded with ${response.status}`);
-      }
-    } else {
-      // No email provider configured yet — log server-side so submissions
-      // are not silently lost during early setup.
-      console.warn(
-        "EMAIL_API_KEY is not set. Contact form submission was not emailed:",
-        { to, subject }
-      );
-    }
+    await sendContactEmail({
+      name: values.name,
+      businessName: values.businessName,
+      email: values.email,
+      phone: values.phone,
+      businessType: values.businessType,
+      need: values.need,
+      currentWebsite: values.currentWebsite,
+      budget: values.budget,
+      description: values.description,
+    });
 
     return {
       status: "success",

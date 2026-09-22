@@ -2,9 +2,10 @@
   "name": "Koraq Labs",
   "short_name": "Koraq Labs",
   "icons": [
-    { "src": "/icons/favicon.svg", "type": "image/svg+xml", "sizes": "any" }
+    { "src": "/icons/favicon-64.png", "type": "image/png", "sizes": "64x64" },
+    { "src": "/apple-icon.png", "type": "image/png", "sizes": "180x180" }
   ],
-  "theme_color": "#12151A",
-  "background_color": "#FAFAF8",
+  "theme_color": "#0C0D0F",
+  "background_color": "#F5F1FA",
   "display": "standalone"
 }

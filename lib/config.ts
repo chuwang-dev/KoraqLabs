@@ -1,15 +1,16 @@
 // Central, environment-driven site configuration.
-// Update these via environment variables rather than editing components directly.
 
 export const siteConfig = {
   name: "Koraq Labs",
   tagline: "Digital products, built to work.",
   description:
-    "Koraq Labs builds modern websites and landing pages for Nigerian businesses.",
+    "Koraq Labs is a Nigerian technology studio designing and building websites, landing pages, and web applications for businesses ready to grow.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://koraqlabs.com",
   email: process.env.EMAIL_TO ?? "koraqlabs@gmail.com",
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "2348143832354",
   whatsappDisplay: "0814 383 2354",
+  location: "Nigeria",
+  brochurePath: "/brochure/koraq-labs-company-profile.pdf",
 };
 
 export function whatsappLink(message?: string) {
@@ -22,6 +23,7 @@ export const primaryNav = [
   { label: "Work", href: "/work" },
   { label: "Process", href: "/#process" },
   { label: "Pricing", href: "/#pricing" },
+  { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
 ];
 
@@ -30,20 +32,15 @@ export const footerNav = [
   { label: "Work", href: "/work" },
   { label: "Process", href: "/#process" },
   { label: "Pricing", href: "/#pricing" },
+  { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
-  {
-    label: "Company Profile",
-    href: "/koraq-labs-company-profile.pdf",
-    download: true,
-  },
 ];
 
-// Social links for the Koraq Labs accounts.
-export const socialLinks = {
-  instagram: "https://www.instagram.com/koraqlabs",
-  facebook: "https://facebook.com/koraqlabs",
-  tiktok: "https://tiktok.com/@koraqlabs",
-  snapchat: "https://snapchat.com/add/koraqlabs",
-  linkedin: "https://linkedin.com/company/koraqlabs",
-};
+export const socialLinks = [
+  { label: "Instagram", href: "https://www.instagram.com/koraqlabs/" },
+  { label: "Facebook", href: "https://facebook.com/koraqlabs" },
+  { label: "TikTok", href: "https://tiktok.com/@koraqlabs" },
+  { label: "Snapchat", href: "https://snapchat.com/add/koraqlabs" },
+  { label: "LinkedIn", href: "https://linkedin.com/company/koraqlabs" },
+];
