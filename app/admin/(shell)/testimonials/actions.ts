@@ -34,6 +34,7 @@ export async function createTestimonial(formData: FormData): Promise<void> {
 
   await logActivity(email, "testimonial_created", clientName);
   revalidatePath("/admin/testimonials");
+  revalidatePath("/");
 }
 
 export async function togglePublished(id: string, published: boolean): Promise<void> {
@@ -61,6 +62,7 @@ export async function togglePublished(id: string, published: boolean): Promise<v
     existing.client_name
   );
   revalidatePath("/admin/testimonials");
+  revalidatePath("/");
 }
 
 export async function removeTestimonial(id: string, clientName: string): Promise<void> {
@@ -69,4 +71,5 @@ export async function removeTestimonial(id: string, clientName: string): Promise
   await deleteTestimonial(id);
   await logActivity(email, "testimonial_deleted", clientName);
   revalidatePath("/admin/testimonials");
+  revalidatePath("/");
 }

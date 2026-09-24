@@ -46,6 +46,8 @@ export async function createProject(formData: FormData): Promise<void> {
 
   await logActivity(email, "project_created", name);
   revalidatePath("/admin/projects");
+  revalidatePath("/work");
+  revalidatePath("/");
 }
 
 export async function changeProjectStatus(id: string, status: string): Promise<void> {
@@ -54,6 +56,8 @@ export async function changeProjectStatus(id: string, status: string): Promise<v
   await updateProjectStatus(id, status);
   await logActivity(email, "project_updated", `Status → ${status}`);
   revalidatePath("/admin/projects");
+  revalidatePath("/work");
+  revalidatePath("/");
 }
 
 export async function toggleProjectFeatured(id: string, featured: boolean): Promise<void> {
@@ -62,6 +66,8 @@ export async function toggleProjectFeatured(id: string, featured: boolean): Prom
   await updateProjectFeatured(id, featured);
   await logActivity(email, "project_updated", featured ? "Marked featured" : "Unmarked featured");
   revalidatePath("/admin/projects");
+  revalidatePath("/work");
+  revalidatePath("/");
 }
 
 export async function removeProject(id: string, name: string): Promise<void> {
@@ -70,4 +76,6 @@ export async function removeProject(id: string, name: string): Promise<void> {
   await deleteProject(id);
   await logActivity(email, "project_deleted", name);
   revalidatePath("/admin/projects");
+  revalidatePath("/work");
+  revalidatePath("/");
 }
