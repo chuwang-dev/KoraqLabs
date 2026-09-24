@@ -3,6 +3,7 @@
 import { validateContactForm, type ContactFormValues } from "@/lib/validations";
 import { sendContactEmail } from "@/lib/mailer";
 import { insertLead } from "@/lib/admin-data";
+import { revalidatePath } from "next/cache";
 
 export type ContactActionState = {
   status: "idle" | "success" | "error";
@@ -47,10 +48,7 @@ export async function submitContactForm(
     };
   }
 
-  // Best-effort: record the lead even if the notification email fails, and
-  // vice versa — a DB hiccup should never be the reason a real inquiry is
-  // lost, and a slow DB should never block a visitor's confirmation.
-  insertLead({
+  const stored = await insertLead({
     name: values.name,
     businessName: values.businessName,
     email: values.email,
@@ -62,9 +60,17 @@ export async function submitContactForm(
     description: values.description,
     source: getString(formData, "source") || "direct",
     landingPage: getString(formData, "landingPage") || undefined,
-  }).catch((error) => {
-    console.error("Failed to store lead in database:", error);
   });
+
+  if (!stored) {
+    return {
+      status: "error",
+      message: "We could not save your project details. Please try again or reach us on WhatsApp.",
+    };
+  }
+
+  revalidatePath("/admin/leads");
+  revalidatePath("/admin/dashboard");
 
   try {
     await sendContactEmail({
@@ -86,9 +92,8 @@ export async function submitContactForm(
   } catch (error) {
     console.error("Failed to send contact form email:", error);
     return {
-      status: "error",
-      message:
-        "Something went wrong sending your message. Please try again or reach us on WhatsApp.",
+      status: "success",
+      message: "Thanks — your project details were saved. We will be in touch shortly.",
     };
   }
 }

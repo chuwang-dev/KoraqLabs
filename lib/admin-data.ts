@@ -381,12 +381,12 @@ export async function insertLead(input: {
   source?: string;
   landingPage?: string;
   device?: string;
-}): Promise<void> {
-  if (!isDatabaseConfigured()) return;
-  await safeQuery(
+}): Promise<boolean> {
+  if (!isDatabaseConfigured()) return false;
+  const rows = await safeQuery<{ id: string }>(
     `insert into leads
       (name, business_name, email, phone, business_type, need, current_website, budget, description, source, landing_page, device)
-     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) returning id`,
     [
       input.name,
       input.businessName,
@@ -402,6 +402,7 @@ export async function insertLead(input: {
       input.device ?? null,
     ]
   );
+  return rows.length === 1;
 }
 
 // ───────────────────────────────────────────────────────────────────────────
