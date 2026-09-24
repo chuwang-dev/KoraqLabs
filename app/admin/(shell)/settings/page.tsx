@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getAdminEmail } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
-import { siteConfig } from "@/lib/config";
+import { siteConfig, socialLinks } from "@/lib/config";
 
 export const metadata: Metadata = { title: "Settings — Koraq Labs Admin" };
 
@@ -51,6 +51,26 @@ export default async function SettingsPage() {
           <Row label="WhatsApp number" value={siteConfig.whatsappDisplay} />
           <Row label="Contact email" value={siteConfig.email} />
         </div>
+      </section>
+
+      <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">
+        <h2 className="mb-1 text-sm font-semibold text-ink-800">Social Pages</h2>
+        <p className="mt-1 text-sm text-ink-500">These links are shown in the public site footer.</p>
+        <ul className="mt-4 divide-y divide-ink-900/5">
+          {socialLinks.map((social) => (
+            <li key={social.label} className="flex items-center justify-between gap-4 py-3">
+              <span className="text-sm text-ink-600">{social.label}</span>
+              <a
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="max-w-[65%] truncate text-sm font-medium text-signal-700 hover:underline"
+              >
+                {social.href}
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">

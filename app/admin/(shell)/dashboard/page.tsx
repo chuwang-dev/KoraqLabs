@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { getDashboardOverview, getLeads } from "@/lib/admin-data";
+import { getDashboardOverview, getFaqs, getLeads, getProjects, getTestimonials } from "@/lib/admin-data";
 import { getAdminEmail } from "@/lib/auth";
 import { MetricCard } from "@/components/admin/metric-card";
 import { DemoDataBadge } from "@/components/admin/demo-data-badge";
 import { DateRangeSelect } from "@/components/admin/date-range-select";
 import { TrafficChart } from "@/components/admin/traffic-chart";
 import { StatusPill } from "@/components/admin/status-pill";
+import Link from "next/link";
 
 export const metadata: Metadata = { title: "Dashboard — Koraq Labs Admin" };
 
@@ -22,10 +23,13 @@ export default async function AdminDashboardPage({
   const params = await searchParams;
   const days = Number(params.days ?? 30) || 30;
 
-  const [overview, adminEmail, { leads }] = await Promise.all([
+  const [overview, adminEmail, { leads }, { projects }, { testimonials }, { faqs }] = await Promise.all([
     getDashboardOverview(days),
     getAdminEmail(),
     getLeads(),
+    getProjects(),
+    getTestimonials(),
+    getFaqs(),
   ]);
 
   const recentLeads = leads.slice(0, 5);
@@ -55,6 +59,24 @@ export default async function AdminDashboardPage({
         <MetricCard label="Conversion Rate" value={`${overview.conversionRate}%`} />
         <MetricCard label="WhatsApp Clicks" value={overview.whatsappClicks.toLocaleString()} />
         <MetricCard label="Project Requests" value={overview.projectRequests.toLocaleString()} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+        <Link href="/admin/projects" className="rounded-lg border border-ink-900/10 bg-paper-white p-5 hover:border-signal-500">
+          <p className="eyebrow">Projects</p>
+          <p className="mt-2 font-display text-3xl italic text-ink-900">{projects.length}</p>
+          <p className="mt-1 text-xs text-ink-400">Manage portfolio entries</p>
+        </Link>
+        <Link href="/admin/testimonials" className="rounded-lg border border-ink-900/10 bg-paper-white p-5 hover:border-signal-500">
+          <p className="eyebrow">Testimonials</p>
+          <p className="mt-2 font-display text-3xl italic text-ink-900">{testimonials.length}</p>
+          <p className="mt-1 text-xs text-ink-400">{testimonials.filter((item) => item.published).length} published</p>
+        </Link>
+        <Link href="/admin/faqs" className="rounded-lg border border-ink-900/10 bg-paper-white p-5 hover:border-signal-500">
+          <p className="eyebrow">FAQs</p>
+          <p className="mt-2 font-display text-3xl italic text-ink-900">{faqs.length}</p>
+          <p className="mt-1 text-xs text-ink-400">{faqs.filter((item) => item.published).length} published</p>
+        </Link>
       </div>
 
       <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">
