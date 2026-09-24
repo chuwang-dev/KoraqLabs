@@ -4,6 +4,7 @@ import { getAdminEmail } from "@/lib/auth";
 import { logout } from "@/app/admin/actions";
 import { AdminNavLinks } from "@/components/admin/sidebar";
 import { MobileAdminNav } from "@/components/admin/mobile-admin-nav";
+import { AdminThemeProvider, AdminThemeToggle } from "@/components/admin/admin-theme-toggle";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -23,7 +24,8 @@ export default async function AdminShellLayout({
   }
 
   return (
-    <div className="min-h-screen bg-paper-soft font-sans">
+    <AdminThemeProvider>
+      <div className="min-h-screen bg-paper-soft font-sans">
       <header className="relative border-b border-ink-900/10 bg-paper-white">
         <div className="flex items-center justify-between px-4 py-3 md:px-6">
           <div className="flex items-center gap-3">
@@ -37,6 +39,7 @@ export default async function AdminShellLayout({
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden text-sm text-ink-500 sm:inline">{email}</span>
+            <AdminThemeToggle />
             <form action={logout}>
               <button
                 type="submit"
@@ -55,6 +58,7 @@ export default async function AdminShellLayout({
         </aside>
         <main className="min-w-0 flex-1 p-4 md:p-8">{children}</main>
       </div>
-    </div>
+      </div>
+    </AdminThemeProvider>
   );
 }

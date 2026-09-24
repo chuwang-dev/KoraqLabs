@@ -27,8 +27,7 @@ export async function createTestimonial(formData: FormData): Promise<void> {
     quote,
     photoUrl: getString(formData, "photoUrl") || undefined,
     rating: rating && rating >= 1 && rating <= 5 ? rating : undefined,
-    // Never auto-publish — an administrator must explicitly flip this later.
-    published: false,
+    published: formData.get("published") === "on",
     featured: false,
   });
 

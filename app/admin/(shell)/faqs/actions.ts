@@ -24,6 +24,7 @@ export async function createFaq(formData: FormData): Promise<void> {
   await logActivity(email, "faq_created", question);
   revalidatePath("/admin/faqs");
   revalidatePath("/faq");
+  revalidatePath("/");
 }
 
 export async function toggleFaqPublished(id: string, published: boolean): Promise<void> {
@@ -43,6 +44,7 @@ export async function toggleFaqPublished(id: string, published: boolean): Promis
   await logActivity(email, published ? "faq_published" : "faq_unpublished", existing.question);
   revalidatePath("/admin/faqs");
   revalidatePath("/faq");
+  revalidatePath("/");
 }
 
 export async function removeFaq(id: string, question: string): Promise<void> {
@@ -52,4 +54,5 @@ export async function removeFaq(id: string, question: string): Promise<void> {
   await logActivity(email, "faq_deleted", question);
   revalidatePath("/admin/faqs");
   revalidatePath("/faq");
+  revalidatePath("/");
 }

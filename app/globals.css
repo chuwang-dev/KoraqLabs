@@ -67,6 +67,44 @@
   }
 }
 
+/* Admin-only theme overrides. The public site keeps its own light palette. */
+.admin-theme-dark {
+  background-color: #111318;
+  color: #f4f5f6;
+}
+
+.admin-theme-dark .bg-paper-white,
+.admin-theme-dark .bg-paper {
+  background-color: #1b1f26;
+}
+
+.admin-theme-dark .bg-paper-soft {
+  background-color: #111318;
+}
+
+.admin-theme-dark .text-ink-900,
+.admin-theme-dark .text-ink-800,
+.admin-theme-dark .text-ink-700,
+.admin-theme-dark .text-ink-600 {
+  color: #f4f5f6;
+}
+
+.admin-theme-dark .text-ink-500,
+.admin-theme-dark .text-ink-400 {
+  color: #aeb5bf;
+}
+
+.admin-theme-dark [class*="border-ink-900"] {
+  border-color: rgb(255 255 255 / 0.14);
+}
+
+.admin-theme-dark input,
+.admin-theme-dark textarea,
+.admin-theme-dark select {
+  background-color: #1b1f26;
+  color: #f4f5f6;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;

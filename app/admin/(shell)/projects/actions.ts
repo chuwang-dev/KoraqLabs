@@ -24,7 +24,7 @@ export async function createProject(formData: FormData): Promise<void> {
   const name = getString(formData, "name");
   if (!name) return;
 
-  const status = getString(formData, "status") || "planning";
+  const status = getString(formData, "status") || "live";
   const technologies = getString(formData, "technologies")
     .split(",")
     .map((t) => t.trim())
@@ -40,7 +40,7 @@ export async function createProject(formData: FormData): Promise<void> {
     technologies,
     websiteUrl: getString(formData, "websiteUrl") || undefined,
     thumbnailUrl: getString(formData, "thumbnailUrl") || undefined,
-    status: PROJECT_STATUSES.includes(status as (typeof PROJECT_STATUSES)[number]) ? status : "planning",
+    status: PROJECT_STATUSES.includes(status as (typeof PROJECT_STATUSES)[number]) ? status : "live",
     featured: formData.get("featured") === "on",
   });
 

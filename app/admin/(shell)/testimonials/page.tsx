@@ -16,7 +16,7 @@ export default async function TestimonialsPage() {
         <div>
           <h1 className="font-display text-2xl italic text-ink-900">Testimonials</h1>
           <p className="mt-1 text-sm text-ink-500">
-            New testimonials are never published automatically — flip the switch when ready.
+            Publish immediately when adding one, or leave it unpublished until it is ready.
           </p>
         </div>
         {usingDemoData ? <DemoDataBadge /> : null}
@@ -50,6 +50,10 @@ export default async function TestimonialsPage() {
               rows={3}
               className="admin-input sm:col-span-2"
             />
+            <label className="flex items-center gap-2 text-sm text-ink-600 sm:col-span-2">
+              <input type="checkbox" name="published" className="h-4 w-4 rounded border-ink-900/25" />
+              Publish immediately on the public site
+            </label>
             <button
               type="submit"
               className="w-fit rounded bg-ink-900 px-5 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-ink-700 sm:col-span-2"

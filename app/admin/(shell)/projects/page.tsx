@@ -16,7 +16,9 @@ export default async function ProjectsPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl italic text-ink-900">Projects</h1>
-          <p className="mt-1 text-sm text-ink-500">Manage portfolio entries shown on /work.</p>
+          <p className="mt-1 text-sm text-ink-500">
+            Manage portfolio entries shown on /work. New projects are public by default.
+          </p>
         </div>
         {usingDemoData ? <DemoDataBadge /> : null}
       </div>
@@ -40,7 +42,7 @@ export default async function ProjectsPage() {
             <input name="websiteUrl" placeholder="Website URL" className="admin-input" />
             <input name="thumbnailUrl" placeholder="Thumbnail image URL" className="admin-input" />
             <input name="technologies" placeholder="Technologies, comma separated" className="admin-input" />
-            <select name="status" defaultValue="planning" className="admin-input">
+            <select name="status" defaultValue="live" className="admin-input">
               {PROJECT_STATUSES.map((s) => (
                 <option key={s} value={s}>
                   {s}
