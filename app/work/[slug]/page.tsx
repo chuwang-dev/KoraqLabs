@@ -3,17 +3,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BrowserMockup } from "@/components/browser-mockup";
 import { CtaButton } from "@/components/cta-button";
-import { portfolioItems } from "@/lib/data";
+import { getPublicPortfolio, getPublicPortfolioItem } from "@/lib/public-data";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const portfolioItems = await getPublicPortfolio();
   return portfolioItems.map((item) => ({ slug: item.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const item = portfolioItems.find((p) => p.slug === slug);
+  const item = await getPublicPortfolioItem(slug);
   if (!item) return {};
   return {
     title: item.name,
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PortfolioDetailPage({ params }: Props) {
   const { slug } = await params;
-  const item = portfolioItems.find((p) => p.slug === slug);
+  const item = await getPublicPortfolioItem(slug);
   if (!item) notFound();
 
   return (

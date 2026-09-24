@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTestimonials } from "@/lib/admin-data";
 import { DemoDataBadge } from "@/components/admin/demo-data-badge";
 import { ToggleSwitch } from "@/components/admin/toggle-switch";
+import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
 import { createTestimonial, togglePublished, removeTestimonial } from "./actions";
 
 export const metadata: Metadata = { title: "Testimonials — Koraq Labs Admin" };
@@ -82,9 +83,7 @@ export default async function TestimonialsPage() {
                     action={togglePublished}
                   />
                   <form action={removeTestimonial.bind(null, t.id, t.client_name)}>
-                    <button type="submit" className="text-xs font-medium text-red-600 hover:underline">
-                      Delete
-                    </button>
+                    <ConfirmDeleteButton item={t.client_name} />
                   </form>
                 </div>
               </div>

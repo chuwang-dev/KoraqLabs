@@ -3,6 +3,7 @@ import { getProjects, PROJECT_STATUSES } from "@/lib/admin-data";
 import { DemoDataBadge } from "@/components/admin/demo-data-badge";
 import { StatusSelect } from "@/components/admin/status-select";
 import { ToggleSwitch } from "@/components/admin/toggle-switch";
+import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
 import { createProject, changeProjectStatus, toggleProjectFeatured, removeProject } from "./actions";
 
 export const metadata: Metadata = { title: "Projects — Koraq Labs Admin" };
@@ -104,12 +105,7 @@ export default async function ProjectsPage() {
                   <td className="px-4 py-3 text-right">
                     {!usingDemoData && (
                       <form action={removeProject.bind(null, p.id, p.name)}>
-                        <button
-                          type="submit"
-                          className="text-xs font-medium text-red-600 hover:underline"
-                        >
-                          Delete
-                        </button>
+                        <ConfirmDeleteButton item={p.name} />
                       </form>
                     )}
                   </td>

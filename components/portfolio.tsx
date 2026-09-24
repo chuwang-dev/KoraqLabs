@@ -1,8 +1,10 @@
 import { SectionHeading } from "@/components/section-heading";
 import { PortfolioCard } from "@/components/portfolio-card";
-import { portfolioItems } from "@/lib/data";
+import { getPublicPortfolio } from "@/lib/public-data";
 
-export function Portfolio() {
+export async function Portfolio() {
+  const portfolioItems = await getPublicPortfolio();
+
   return (
     <section className="section-pad border-b border-ink-900/10">
       <div className="container-page">

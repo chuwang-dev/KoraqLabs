@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getFaqs } from "@/lib/admin-data";
 import { DemoDataBadge } from "@/components/admin/demo-data-badge";
 import { ToggleSwitch } from "@/components/admin/toggle-switch";
+import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
 import { createFaq, toggleFaqPublished, removeFaq } from "./actions";
 
 export const metadata: Metadata = { title: "FAQs — Koraq Labs Admin" };
@@ -58,9 +59,7 @@ export default async function FaqsPage() {
                     action={toggleFaqPublished}
                   />
                   <form action={removeFaq.bind(null, f.id, f.question)}>
-                    <button type="submit" className="text-xs font-medium text-red-600 hover:underline">
-                      Delete
-                    </button>
+                    <ConfirmDeleteButton item={f.question} />
                   </form>
                 </div>
               </div>

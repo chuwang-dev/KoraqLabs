@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PortfolioCard } from "@/components/portfolio-card";
-import { portfolioItems } from "@/lib/data";
+import { getPublicPortfolio } from "@/lib/public-data";
 
 export const metadata: Metadata = {
   title: "Our Work",
@@ -8,7 +8,9 @@ export const metadata: Metadata = {
     "A look at the websites and landing pages Koraq Labs designs and builds for Nigerian businesses.",
 };
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const portfolioItems = await getPublicPortfolio();
+
   return (
     <>
       <section className="border-b border-ink-900/10 section-pad !pb-14">

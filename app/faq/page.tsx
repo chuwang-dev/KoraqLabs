@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { CtaButton } from "@/components/cta-button";
 import { FaqAccordion } from "@/components/faq-accordion";
-import { faqItems } from "@/lib/data";
+import { getPublicFaqs } from "@/lib/public-data";
 
 export const metadata: Metadata = {
   title: "FAQ",
   description: "Answers to common questions about working with Koraq Labs.",
 };
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const faqItems = await getPublicFaqs();
+
   return (
     <section className="section-pad">
       <div className="container-page">
