@@ -25,12 +25,12 @@ export function Industries() {
             const Icon = icons[i % icons.length];
             return (
               <div
-                key={industry.name}
+                key={industry}
                 className="flex flex-col items-center gap-3 rounded-md border border-ink-900/10 bg-paper px-4 py-7 text-center"
               >
                 <Icon className="h-6 w-6 text-ink-900/70" />
                 <span className="text-[14px] font-medium text-ink-700">
-                  {industry.name}
+                  {industry}
                 </span>
               </div>
             );

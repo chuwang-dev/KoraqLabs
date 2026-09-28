@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { safeQuery } from "@/lib/db";
-import { parseBrowser, parseDevice, parseTrafficSource } from "@/lib/request-meta";
+import { parseBrowser, parseDevice, parseGeoFromHeaders, parseOS, parseTrafficSource } from "@/lib/request-meta";
 import { siteConfig } from "@/lib/config";
 
 export const runtime = "nodejs";
@@ -45,14 +45,14 @@ export async function POST(request: NextRequest) {
     // keep default
   }
 
-  // Best-effort, coarse geolocation from edge headers where the hosting
-  // platform provides them (e.g. Vercel). No IP address is ever stored.
-  const country = request.headers.get("x-vercel-ip-country") ?? null;
-  const city = request.headers.get("x-vercel-ip-city") ?? null;
+  // Coarse geolocation from edge headers only — see lib/request-meta.ts for
+  // which hosts provide this and how it degrades on ones that don't. No IP
+  // address is ever stored, and no external geolocation call is made.
+  const { country, city } = parseGeoFromHeaders(request.headers);
 
   await safeQuery(
-    `insert into analytics_events (event_name, session_id, page, source, device, browser, country, city, metadata)
-     values ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+    `insert into analytics_events (event_name, session_id, page, source, device, browser, os, country, city, metadata)
+     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
     [
       event,
       sessionId,
@@ -60,8 +60,9 @@ export async function POST(request: NextRequest) {
       parseTrafficSource(referrer, siteHost),
       parseDevice(userAgent),
       parseBrowser(userAgent),
-      country ? decodeURIComponent(country) : null,
-      city ? decodeURIComponent(city) : null,
+      parseOS(userAgent),
+      country,
+      city,
       metadata ? JSON.stringify(metadata) : null,
     ]
   );

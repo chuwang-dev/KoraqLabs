@@ -76,19 +76,36 @@ from `robots.txt` and the sitemap.
 ### What's in it
 
 - **Dashboard** — visitors, page views, leads, conversion rate, WhatsApp
-  clicks, and project requests for a selectable date range, plus a traffic
-  chart, traffic sources, top pages, and recent leads.
+  clicks, and project requests for a selectable date range (Today,
+  Yesterday, Last 7/30/90 days, This month, Last month, or a custom
+  from/to range), plus a traffic chart, traffic sources, top pages,
+  device/browser/OS breakdowns, a country + Nigeria-city location
+  breakdown, and a conversion funnel (Visitors → Viewed Services → Viewed
+  Pricing → Started Project → Contacted Koraq → Qualified Lead).
 - **Leads** — every contact-form submission, with a status pipeline (New →
   Contacted → Qualified → Proposal Sent → Won/Lost) and a detail view.
-- **Projects / Testimonials / FAQs** — lightweight content management for
-  the public site's portfolio, testimonials, and FAQ sections. Testimonials
-  are never auto-published; an admin must explicitly flip them to
-  "Published".
+- **FAQs** — edits go live on the public site. Once you publish at least
+  one FAQ in the admin, the database list replaces the built-in FAQs in
+  `lib/data.ts` on `/faq`, the homepage and `/contact` (so add your full
+  set, not just one). With none published, the built-in list is shown.
+- **Projects / Testimonials** — full add/edit/delete with image upload, but
+  **not yet shown on the public website**: `/work` still renders the
+  portfolio defined in `lib/data.ts`, and there is no public testimonials
+  section yet. Treat these as a content workspace until that is wired up.
+- **Website** — a real, on-demand health check: fetches the live site to
+  measure reachability, response time, and SSL, and (best-effort) pulls
+  Lighthouse Performance/Accessibility/SEO/Best Practices scores from
+  Google PageSpeed Insights — clearly labeled with that source, and left
+  blank (never guessed) if the request fails. Nothing runs on a timer; it
+  only runs when you click "Run check now", so it never eats your PageSpeed
+  quota or slows down a dashboard page load.
 - **Activity** — a log of admin actions (logins, status changes, content
-  edits).
-- **Settings** — a read-only view of the current environment configuration.
-  Nothing is editable from the UI by design: credentials and secrets only
-  ever live in environment variables, never in the database or the browser.
+  edits, health checks).
+- **Settings** — edit the site name, tagline, description, canonical URL,
+  contact details, WhatsApp number, and social links. The public navbar,
+  footer, contact sections, metadata, robots file, and sitemap use the saved
+  values. Authentication secrets remain environment-driven. The same page
+  links to authenticator-based 2FA setup and session revocation.
 
 ### Security notes
 
@@ -97,12 +114,82 @@ from `robots.txt` and the sitemap.
 - Passwords are bcrypt-hashed; sessions are signed JWTs in HTTP-only,
   `Secure` (in production), `SameSite=Lax` cookies — never in
   `localStorage`.
-- Login attempts are rate-limited (in-memory, 8 attempts / 15 minutes per
-  IP+email — fine for a single-admin dashboard; swap for a shared store if
-  you run multiple instances).
-- Analytics events store a session id, page, coarse device/browser/traffic
-  source, and — only where your host provides it — a coarse country/city.
+- Login attempts are rate-limited **in Postgres** (`login_attempts` table),
+  not in-process memory — this is the part that actually matters in
+  production: an in-memory counter resets on every serverless cold start
+  and isn't shared across instances, so it gives almost no real protection
+  once deployed. The Postgres version uses an atomic `INSERT ... ON
+  CONFLICT DO UPDATE`, so concurrent requests can't race past the limit.
+  Two layers apply together: 8 attempts / 15 min per account, 20 / 15 min
+  per IP (catches one IP spraying multiple email guesses). Keys are sha256
+  hashes, not raw IP/email, so the table never holds a plaintext log of who
+  tried to log in. If `DATABASE_URL` isn't set, this falls back to an
+  in-memory limiter — fine for local/demo use, but rotate in a database
+  before exposing `/admin/login` publicly.
+  Optionally, prune old rows on a schedule (e.g. a daily cron or Vercel
+  Cron Job) so the table doesn't grow forever:
+  ```sql
+  delete from login_attempts where updated_at < now() - interval '1 day';
+  ```
+- Analytics events store a session id, page, and coarse device/browser/OS/
+  traffic source, plus — only from edge/CDN headers, never an external
+  lookup — a coarse country/city where the host provides it: full support
+  on Vercel, country + city on Netlify, country only on Cloudflare, none on
+  a plain VPS or hosts that don't inject these headers (Railway, Fly.io).
   No IP addresses, no precise location, no personal identifiers.
+
+> **Upgrading an existing deployment?** Rerun `psql "$DATABASE_URL" -f
+> db/schema.sql` after pulling these changes — it's additive and safe to
+> run again, and adds the new `os` column on `analytics_events` plus the
+> `health_checks`, `admin_sessions`, `uploads`, and `site_settings` tables.
+
+### Additional hardening & compliance (latest round)
+
+- **Session revocation** — each login stores a session id in `admin_sessions`;
+  logout deletes it, and *Settings → Revoke all sessions* logs out every
+  device at once. (Requires `DATABASE_URL`; without it sessions are
+  stateless and only `AUTH_SECRET` rotation invalidates them.)
+- **CSRF** — `middleware.ts` rejects any state-changing `/admin` request
+  whose Origin/Referer doesn't match the site's host, on top of Next.js's
+  built-in Server Action protections.
+- **Failed logins** are recorded in *Activity* (highlighted red).
+- **Form feedback** — Projects, Testimonials and FAQs now show real save
+  errors (e.g. a duplicate project slug) instead of silently doing nothing.
+- **Leads** — search, pagination (25/page), CSV export (spreadsheet
+  formula-injection safe), and duplicate detection (same email within 30
+  minutes is not stored twice).
+- **Website health** — 60-second cooldown on "Run check now", a history
+  table, and an alert email when a check comes back "Attention Required".
+- **Timezone** — date presets (Today, This month, …) use West Africa Time
+  (UTC+1) rather than the server's timezone.
+- **Consent** — a cookie banner gates *all* analytics (our own events and
+  Google Analytics) until a visitor accepts; `/privacy` explains what is
+  collected and lets visitors change their choice. Have the policy text
+  reviewed against your legal obligations (e.g. the Nigeria Data
+  Protection Act) before launch.
+
+Rerun `psql "$DATABASE_URL" -f db/schema.sql` to add the `admin_sessions`
+table (safe to run repeatedly).
+
+### Two-factor authentication & image uploads
+
+- **2FA (TOTP)** — works with Google Authenticator, Authy, 1Password, etc.
+  Log in, open *Settings → Two-factor authentication*, scan the QR code,
+  confirm a code, then set `ADMIN_TOTP_SECRET` in your environment and
+  redeploy. From then on sign-in needs the password *and* a code; codes
+  can't be replayed. **Lost your phone?** Remove `ADMIN_TOTP_SECRET` and
+  redeploy — login falls back to password-only. Keep access to your
+  hosting dashboard. (Adds one dependency, `qrcode`, for the QR image.)
+- **Image upload** — the *Upload* button next to thumbnail/photo fields
+  stores images (PNG/JPEG/GIF/WebP, max 2 MB) in Postgres and serves them
+  from `/api/uploads/<id>`. Files are checked by their real bytes, not the
+  filename; SVG is refused because it can carry scripts. Postgres storage
+  suits a handful of images — for many, or for CDN delivery, move to
+  Cloudinary/S3/Vercel Blob and keep saving just the URL. Requires
+  `DATABASE_URL`; pasting an external URL still works without it.
+
+Rerun `psql "$DATABASE_URL" -f db/schema.sql` to add the `uploads` table,
+then `npm install` for the new `qrcode` dependency.
 
 ### Contact form → Gmail
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { getConsent } from "@/lib/consent";
+
 // Two independent, safe-no-op tracking paths:
 //  1. gtag — only fires if NEXT_PUBLIC_GA_ID is set and the script loaded.
 //  2. our own /api/analytics/event beacon — only persists if DATABASE_URL is
@@ -44,6 +46,10 @@ function getSessionId(): string {
 
 export function trackEvent(event: AnalyticsEvent, params?: Record<string, string>) {
   if (typeof window === "undefined") return;
+
+  // No consent, no tracking — see lib/consent.ts. This gate covers both the
+  // gtag call and our own beacon below.
+  if (getConsent() !== "granted") return;
 
   const w = window as GtagWindow;
   if (typeof w.gtag === "function") {

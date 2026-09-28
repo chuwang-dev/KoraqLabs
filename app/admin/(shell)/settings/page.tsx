@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { getAdminEmail } from "@/lib/auth";
+import Link from "next/link";
+import { getAdminEmail, isTwoFactorEnabled } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
-import { siteConfig, socialLinks } from "@/lib/config";
+import { siteConfig } from "@/lib/config";
+import { revokeAllSessions } from "@/app/admin/actions";
 
 export const metadata: Metadata = { title: "Settings — Koraq Labs Admin" };
 
@@ -33,6 +35,7 @@ export default async function SettingsPage() {
         <div className="divide-y divide-ink-900/5">
           <Row label="Signed in as" value={email ?? "—"} />
           <Row label="Session length" value="8 hours" />
+          <Row label="Two-factor authentication" value={isTwoFactorEnabled() ? "Enabled" : "Not enabled"} />
         </div>
         <div className="mt-4 rounded border border-amber-500/25 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-800">
           To change the admin password: generate a new bcrypt hash locally (
@@ -40,6 +43,40 @@ export default async function SettingsPage() {
           update <code className="font-mono">ADMIN_PASSWORD_HASH</code> in your deployment&rsquo;s
           environment variables and redeploy. This keeps the password out of the database and the UI
           entirely.
+        </div>
+        <div className="mt-3 flex items-center justify-between rounded border border-ink-900/10 p-4">
+          <div>
+            <p className="text-sm font-medium text-ink-800">Two-factor authentication</p>
+            <p className="mt-0.5 text-xs text-ink-500">
+              Require a code from an authenticator app at sign-in.
+            </p>
+          </div>
+          <Link
+            href="/admin/settings/two-factor"
+            className="shrink-0 rounded border border-ink-900/15 px-3 py-1.5 text-xs font-medium text-ink-700 transition-colors hover:bg-ink-900/5"
+          >
+            {isTwoFactorEnabled() ? "Manage" : "Set up"}
+          </Link>
+        </div>
+        <div className="mt-3 flex items-center justify-between rounded border border-ink-900/10 p-4">
+          <div>
+            <p className="text-sm font-medium text-ink-800">Log out everywhere</p>
+            <p className="mt-0.5 text-xs text-ink-500">
+              {isDatabaseConfigured()
+                ? "Revokes every active session, including this one, immediately."
+                : "Requires DATABASE_URL — without it, sessions can only be invalidated by rotating AUTH_SECRET."}
+            </p>
+          </div>
+          {isDatabaseConfigured() ? (
+            <form action={revokeAllSessions}>
+              <button
+                type="submit"
+                className="shrink-0 rounded border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-500/5"
+              >
+                Revoke all sessions
+              </button>
+            </form>
+          ) : null}
         </div>
       </section>
 
@@ -54,31 +91,17 @@ export default async function SettingsPage() {
       </section>
 
       <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">
-        <h2 className="mb-1 text-sm font-semibold text-ink-800">Social Pages</h2>
-        <p className="mt-1 text-sm text-ink-500">These links are shown in the public site footer.</p>
-        <ul className="mt-4 divide-y divide-ink-900/5">
-          {socialLinks.map((social) => (
-            <li key={social.label} className="flex items-center justify-between gap-4 py-3">
-              <span className="text-sm text-ink-600">{social.label}</span>
-              <a
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="max-w-[65%] truncate text-sm font-medium text-signal-700 hover:underline"
-              >
-                {social.href}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">
         <h2 className="mb-1 text-sm font-semibold text-ink-800">Analytics</h2>
         <div className="divide-y divide-ink-900/5">
           <Row label="Database-backed events" value={isDatabaseConfigured() ? "Connected" : "Not configured"} />
           <Row label="Google Analytics 4" value={gaId ? "Connected" : "Not configured"} />
         </div>
+        <p className="mt-4 text-xs leading-relaxed text-ink-400">
+          Country/city on the dashboard comes from edge headers, not an external lookup, so results
+          depend on your host: full support on Vercel, country + city on Netlify, country only on
+          Cloudflare. Other hosts (a plain VPS, Railway, Fly.io) won&rsquo;t populate location data —
+          visitor counts and every other metric are unaffected.
+        </p>
       </section>
 
       <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">

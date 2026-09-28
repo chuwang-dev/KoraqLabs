@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { getTestimonials } from "@/lib/admin-data";
 import { DemoDataBadge } from "@/components/admin/demo-data-badge";
 import { ToggleSwitch } from "@/components/admin/toggle-switch";
-import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
-import { createTestimonial, togglePublished, removeTestimonial } from "./actions";
+import { TestimonialForm } from "@/components/admin/testimonial-form";
+import { togglePublished, removeTestimonial } from "./actions";
 
 export const metadata: Metadata = { title: "Testimonials — Koraq Labs Admin" };
 
@@ -16,7 +16,7 @@ export default async function TestimonialsPage() {
         <div>
           <h1 className="font-display text-2xl italic text-ink-900">Testimonials</h1>
           <p className="mt-1 text-sm text-ink-500">
-            Publish immediately when adding one, or leave it unpublished until it is ready.
+            New testimonials are never published automatically — flip the switch when ready.
           </p>
         </div>
         {usingDemoData ? <DemoDataBadge /> : null}
@@ -31,36 +31,7 @@ export default async function TestimonialsPage() {
           <summary className="cursor-pointer text-sm font-semibold text-ink-800">
             + Add a testimonial
           </summary>
-          <form action={createTestimonial} className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <input name="clientName" required placeholder="Client name" className="admin-input" />
-            <input name="businessName" placeholder="Business" className="admin-input" />
-            <input name="position" placeholder="Position" className="admin-input" />
-            <input name="photoUrl" placeholder="Photo URL" className="admin-input" />
-            <select name="rating" defaultValue="5" className="admin-input">
-              {[5, 4, 3, 2, 1].map((n) => (
-                <option key={n} value={n}>
-                  {n} star{n === 1 ? "" : "s"}
-                </option>
-              ))}
-            </select>
-            <textarea
-              name="quote"
-              required
-              placeholder="Testimonial text"
-              rows={3}
-              className="admin-input sm:col-span-2"
-            />
-            <label className="flex items-center gap-2 text-sm text-ink-600 sm:col-span-2">
-              <input type="checkbox" name="published" className="h-4 w-4 rounded border-ink-900/25" />
-              Publish immediately on the public site
-            </label>
-            <button
-              type="submit"
-              className="w-fit rounded bg-ink-900 px-5 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-ink-700 sm:col-span-2"
-            >
-              Add testimonial
-            </button>
-          </form>
+          <TestimonialForm />
         </details>
       )}
 
@@ -87,11 +58,17 @@ export default async function TestimonialsPage() {
                     action={togglePublished}
                   />
                   <form action={removeTestimonial.bind(null, t.id, t.client_name)}>
-                    <ConfirmDeleteButton item={t.client_name} />
+                    <button type="submit" className="text-xs font-medium text-red-600 hover:underline">
+                      Delete
+                    </button>
                   </form>
                 </div>
               </div>
               <p className="mt-3 text-sm text-ink-700">&ldquo;{t.quote}&rdquo;</p>
+              <details className="mt-3">
+                <summary className="cursor-pointer text-xs font-medium text-signal-600">Edit</summary>
+                <TestimonialForm testimonial={t} />
+              </details>
             </li>
           ))}
         </ul>

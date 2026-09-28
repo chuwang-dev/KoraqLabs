@@ -9,8 +9,6 @@ export function PageViewTracker() {
 
   useEffect(() => {
     trackEvent("page_view");
-    // Re-fire whenever the path changes (client-side navigations included).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return null;

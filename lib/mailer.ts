@@ -80,3 +80,26 @@ export async function sendContactEmail(payload: ContactEmailPayload) {
 
   return { sent: true as const };
 }
+
+/** Generic admin notification (health check failures, etc.) — same Gmail
+ *  transporter as the contact form, since it's the only mail credential
+ *  this project asks for. */
+export async function sendAdminAlert(subject: string, text: string) {
+  const client = getTransporter();
+  const gmailUser = process.env.GMAIL_USER;
+  const to = process.env.EMAIL_TO || gmailUser;
+
+  if (!client || !gmailUser || !to) {
+    console.warn("GMAIL_USER / GMAIL_APP_PASSWORD is not set. Admin alert was not emailed:", subject);
+    return { sent: false as const };
+  }
+
+  await client.sendMail({
+    from: `Koraq Labs Admin <${gmailUser}>`,
+    to,
+    subject,
+    text,
+  });
+
+  return { sent: true as const };
+}

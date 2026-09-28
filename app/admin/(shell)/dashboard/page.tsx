@@ -1,35 +1,31 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
-import { getDashboardOverview, getFaqs, getLeads, getProjects, getTestimonials } from "@/lib/admin-data";
+import { getDashboardOverview, getLeads } from "@/lib/admin-data";
 import { getAdminEmail } from "@/lib/auth";
+import { resolveDateRange } from "@/lib/date-range";
 import { MetricCard } from "@/components/admin/metric-card";
 import { DemoDataBadge } from "@/components/admin/demo-data-badge";
 import { DateRangeSelect } from "@/components/admin/date-range-select";
 import { TrafficChart } from "@/components/admin/traffic-chart";
 import { StatusPill } from "@/components/admin/status-pill";
-import Link from "next/link";
+import { BreakdownList } from "@/components/admin/breakdown-list";
+import { ConversionFunnel } from "@/components/admin/funnel";
 
 export const metadata: Metadata = { title: "Dashboard — Koraq Labs Admin" };
-
-function nairaBudget(budget: string | null) {
-  return budget ?? "—";
-}
 
 export default async function AdminDashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ days?: string }>;
+  searchParams: Promise<{ range?: string; from?: string; to?: string }>;
 }) {
   const params = await searchParams;
-  const days = Number(params.days ?? 30) || 30;
+  const range = resolveDateRange(params);
 
-  const [overview, adminEmail, { leads }, { projects }, { testimonials }, { faqs }] = await Promise.all([
-    getDashboardOverview(days),
+  const [overview, adminEmail, { leads }] = await Promise.all([
+    getDashboardOverview(range),
     getAdminEmail(),
     getLeads(),
-    getProjects(),
-    getTestimonials(),
-    getFaqs(),
   ]);
 
   const recentLeads = leads.slice(0, 5);
@@ -52,6 +48,8 @@ export default async function AdminDashboardPage({
         </div>
       </div>
 
+      <p className="-mt-4 text-xs text-ink-400">Showing: {overview.rangeLabel}</p>
+
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
         <MetricCard label="Visitors" value={overview.visitors.toLocaleString()} />
         <MetricCard label="Page Views" value={overview.pageViews.toLocaleString()} />
@@ -59,24 +57,6 @@ export default async function AdminDashboardPage({
         <MetricCard label="Conversion Rate" value={`${overview.conversionRate}%`} />
         <MetricCard label="WhatsApp Clicks" value={overview.whatsappClicks.toLocaleString()} />
         <MetricCard label="Project Requests" value={overview.projectRequests.toLocaleString()} />
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <Link href="/admin/projects" className="rounded-lg border border-ink-900/10 bg-paper-white p-5 hover:border-signal-500">
-          <p className="eyebrow">Projects</p>
-          <p className="mt-2 font-display text-3xl italic text-ink-900">{projects.length}</p>
-          <p className="mt-1 text-xs text-ink-400">Manage portfolio entries</p>
-        </Link>
-        <Link href="/admin/testimonials" className="rounded-lg border border-ink-900/10 bg-paper-white p-5 hover:border-signal-500">
-          <p className="eyebrow">Testimonials</p>
-          <p className="mt-2 font-display text-3xl italic text-ink-900">{testimonials.length}</p>
-          <p className="mt-1 text-xs text-ink-400">{testimonials.filter((item) => item.published).length} published</p>
-        </Link>
-        <Link href="/admin/faqs" className="rounded-lg border border-ink-900/10 bg-paper-white p-5 hover:border-signal-500">
-          <p className="eyebrow">FAQs</p>
-          <p className="mt-2 font-display text-3xl italic text-ink-900">{faqs.length}</p>
-          <p className="mt-1 text-xs text-ink-400">{faqs.filter((item) => item.published).length} published</p>
-        </Link>
       </div>
 
       <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">
@@ -139,11 +119,54 @@ export default async function AdminDashboardPage({
       </div>
 
       <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">
+        <h2 className="mb-4 text-sm font-semibold text-ink-800">Visitor Technology</h2>
+        <div className="grid gap-6 sm:grid-cols-3">
+          <div>
+            <p className="eyebrow mb-3">Device</p>
+            <BreakdownList items={overview.deviceBreakdown} />
+          </div>
+          <div>
+            <p className="eyebrow mb-3">Browser</p>
+            <BreakdownList items={overview.browserBreakdown} />
+          </div>
+          <div>
+            <p className="eyebrow mb-3">Operating System</p>
+            <BreakdownList items={overview.osBreakdown} />
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">
+        <h2 className="mb-1 text-sm font-semibold text-ink-800">Visitor Location</h2>
+        <p className="mb-4 text-xs text-ink-400">
+          Coarse country/city from edge headers — see Settings for which hosts this works on.
+        </p>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div>
+            <p className="eyebrow mb-3">By Country</p>
+            <BreakdownList items={overview.countryBreakdown} />
+          </div>
+          <div>
+            <p className="eyebrow mb-3">Nigeria — by City</p>
+            <BreakdownList items={overview.nigeriaCityBreakdown} />
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">
+        <h2 className="mb-1 text-sm font-semibold text-ink-800">Conversion Funnel</h2>
+        <p className="mb-4 text-xs text-ink-400">
+          Percentages show conversion from the stage directly above.
+        </p>
+        <ConversionFunnel stages={overview.funnel} />
+      </section>
+
+      <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-ink-800">Recent Leads</h2>
-          <a href="/admin/leads" className="text-xs font-medium text-signal-600 hover:underline">
+          <Link href="/admin/leads" className="text-xs font-medium text-signal-600 hover:underline">
             View all →
-          </a>
+          </Link>
         </div>
         {recentLeads.length === 0 ? (
           <p className="text-sm text-ink-400">No leads yet.</p>
@@ -153,7 +176,7 @@ export default async function AdminDashboardPage({
               <li key={lead.id} className="flex items-center justify-between py-3 text-sm">
                 <div>
                   <p className="font-medium text-ink-900">{lead.business_name}</p>
-                  <p className="text-xs text-ink-400">{nairaBudget(lead.budget)}</p>
+                  <p className="text-xs text-ink-400">{lead.budget ?? "—"}</p>
                 </div>
                 <StatusPill status={lead.status} />
               </li>

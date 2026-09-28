@@ -5,9 +5,6 @@ const nextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
-  eslint: {
-    dirs: ["app", "components", "lib"],
-  },
 };
 
 export default nextConfig;

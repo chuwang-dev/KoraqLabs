@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getLeads, LEAD_STATUSES } from "@/lib/admin-data";
 import { DemoDataBadge } from "@/components/admin/demo-data-badge";
+import { Pagination } from "@/components/admin/pagination";
 import { StatusSelect } from "@/components/admin/status-select";
 import { changeLeadStatus } from "./actions";
 
@@ -15,8 +16,17 @@ function formatDate(iso: string) {
   });
 }
 
-export default async function LeadsPage() {
-  const { leads, usingDemoData } = await getLeads();
+export default async function LeadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; q?: string }>;
+}) {
+  const params = await searchParams;
+  const q = params.q?.trim() ?? "";
+  const { leads, usingDemoData, total, page, pageCount } = await getLeads({
+    page: Number(params.page) || 1,
+    q,
+  });
 
   return (
     <div className="space-y-6">
@@ -24,11 +34,35 @@ export default async function LeadsPage() {
         <div>
           <h1 className="font-display text-2xl italic text-ink-900">Leads</h1>
           <p className="mt-1 text-sm text-ink-500">
-            {leads.length} inquir{leads.length === 1 ? "y" : "ies"}
+            {total} inquir{total === 1 ? "y" : "ies"}
+            {q ? ` matching “${q}”` : ""}
           </p>
         </div>
-        {usingDemoData ? <DemoDataBadge /> : null}
+        <div className="flex items-center gap-3">
+          {usingDemoData ? <DemoDataBadge /> : null}
+          <Link
+            href="/admin/leads/export"
+            className="rounded border border-ink-900/15 px-3 py-2 text-xs font-medium text-ink-700 transition-colors hover:bg-ink-900/5"
+          >
+            Export CSV
+          </Link>
+        </div>
       </div>
+
+      <form method="get" className="flex gap-2">
+        <input
+          name="q"
+          defaultValue={q}
+          placeholder="Search name, business, or email"
+          className="admin-input max-w-sm"
+        />
+        <button
+          type="submit"
+          className="rounded bg-ink-900 px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-ink-700"
+        >
+          Search
+        </button>
+      </form>
 
       {leads.length === 0 ? (
         <div className="rounded-lg border border-dashed border-ink-900/15 p-10 text-center text-sm text-ink-400">
@@ -80,6 +114,8 @@ export default async function LeadsPage() {
           </table>
         </div>
       )}
+
+      <Pagination basePath="/admin/leads" page={page} pageCount={pageCount} extraParams={{ q }} />
     </div>
   );
 }
