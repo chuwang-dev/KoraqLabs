@@ -36,6 +36,8 @@ export async function getPublicPortfolio(): Promise<PortfolioItem[]> {
      from projects where status = 'live' order by featured desc, created_at desc`
   );
 
+    if (rows.length === 0) return portfolioItems;
+
   return rows.map((project) => ({
     slug: project.slug,
     category: project.project_type ?? project.industry ?? "Project",

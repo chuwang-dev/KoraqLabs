@@ -5,13 +5,24 @@ import { MobileMenu } from "@/components/mobile-menu";
 import { CtaButton } from "@/components/cta-button";
 import { getSiteSettings } from "@/lib/site-settings";
 
-export async function Navbar() {
+export async function Navbar({
+  brandName,
+  whatsappNumber,
+  whatsappDisplay,
+}: {
+  brandName?: string;
+  whatsappNumber?: string;
+  whatsappDisplay?: string;
+} = {}) {
   const { settings } = await getSiteSettings();
+  const activeBrandName = brandName ?? settings.name;
+  const activeWhatsappNumber = whatsappNumber ?? settings.whatsappNumber;
+  const activeWhatsappDisplay = whatsappDisplay ?? settings.whatsappDisplay;
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#C8A2C8]/30 bg-[#FBF6FB]/90 backdrop-blur">
       <div className="container-page flex h-[65px] items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 text-ink-900" aria-label={`${settings.name} home`}>
+        <Link href="/" className="flex items-center gap-2 text-ink-900" aria-label={`${activeBrandName} home`}>
           <Image
             src="/images/koraq-labs-logo.png"
             alt="Koraq Labs"
@@ -20,7 +31,7 @@ export async function Navbar() {
             className="h-11 w-11 rounded-md bg-[#F3E7F3] p-1 object-contain shadow-[0_2px_10px_rgba(200,162,200,0.18)]"
             priority
           />
-          <span className="font-display text-xl">{settings.name}</span>
+          <span className="font-display text-xl">{activeBrandName}</span>
         </Link>
 
         <nav className="hidden md:block">
@@ -42,7 +53,7 @@ export async function Navbar() {
           <CtaButton href="/contact">Start a Project</CtaButton>
         </div>
 
-        <MobileMenu whatsappNumber={settings.whatsappNumber} whatsappDisplay={settings.whatsappDisplay} />
+        <MobileMenu whatsappNumber={activeWhatsappNumber} whatsappDisplay={activeWhatsappDisplay} />
       </div>
     </header>
   );

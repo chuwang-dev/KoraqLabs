@@ -37,7 +37,7 @@ export async function checkNow(): Promise<void> {
       [
         `A website health check just came back "Attention Required".`,
         "",
-        `URL: ${siteConfig.url}`,
+        `URL: ${result.checked_url}`,
         `Status code: ${result.status_code ?? "no response"}`,
         `Response time: ${result.response_time_ms ?? "—"} ms`,
         result.error ? `Error: ${result.error}` : null,
@@ -50,4 +50,5 @@ export async function checkNow(): Promise<void> {
   }
 
   revalidatePath("/admin/website");
+  revalidatePath("/admin/dashboard");
 }

@@ -11,6 +11,8 @@ import { TrafficChart } from "@/components/admin/traffic-chart";
 import { StatusPill } from "@/components/admin/status-pill";
 import { BreakdownList } from "@/components/admin/breakdown-list";
 import { ConversionFunnel } from "@/components/admin/funnel";
+import { getLatestHealthCheck } from "@/lib/health";
+import { checkNow } from "@/app/admin/(shell)/website/actions";
 
 export const metadata: Metadata = { title: "Dashboard — Koraq Labs Admin" };
 
@@ -22,10 +24,11 @@ export default async function AdminDashboardPage({
   const params = await searchParams;
   const range = resolveDateRange(params);
 
-  const [overview, adminEmail, { leads }] = await Promise.all([
+  const [overview, adminEmail, { leads }, latestHealthCheck] = await Promise.all([
     getDashboardOverview(range),
     getAdminEmail(),
     getLeads(),
+    getLatestHealthCheck(),
   ]);
 
   const recentLeads = leads.slice(0, 5);
@@ -58,6 +61,43 @@ export default async function AdminDashboardPage({
         <MetricCard label="WhatsApp Clicks" value={overview.whatsappClicks.toLocaleString()} />
         <MetricCard label="Project Requests" value={overview.projectRequests.toLocaleString()} />
       </div>
+
+      <section className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-ink-900/10 bg-paper-white p-5">
+        <div>
+          <h2 className="text-sm font-semibold text-ink-800">Site Health</h2>
+          {latestHealthCheck ? (
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+              <span className={latestHealthCheck.operational ? "font-medium text-emerald-700" : "font-medium text-red-600"}>
+                {latestHealthCheck.operational ? "Operational" : "Attention Required"}
+              </span>
+              <span className="text-ink-500">
+                {latestHealthCheck.status_code ?? "No response"}
+                {latestHealthCheck.response_time_ms !== null ? ` · ${latestHealthCheck.response_time_ms} ms` : ""}
+              </span>
+              {latestHealthCheck.checked_url ? (
+                <a href={latestHealthCheck.checked_url} target="_blank" rel="noopener noreferrer" className="max-w-[240px] truncate text-signal-700 hover:underline">
+                  {latestHealthCheck.checked_url}
+                </a>
+              ) : null}
+              <span className="text-xs text-ink-400">
+                Checked {new Date(latestHealthCheck.checked_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}
+              </span>
+            </div>
+          ) : (
+            <p className="mt-2 text-sm text-ink-500">No real health check has been run yet.</p>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <Link href="/admin/website" className="text-xs font-medium text-signal-700 hover:underline">
+            Details
+          </Link>
+          <form action={checkNow}>
+            <button type="submit" className="rounded bg-ink-900 px-4 py-2 text-xs font-medium text-paper hover:bg-ink-700">
+              Check now
+            </button>
+          </form>
+        </div>
+      </section>
 
       <section className="rounded-lg border border-ink-900/10 bg-paper-white p-5">
         <h2 className="mb-4 text-sm font-semibold text-ink-800">Traffic</h2>

@@ -16,6 +16,7 @@ export type HealthCheck = {
   scores_source: string | null;
   deployment_env: string | null;
   deployment_commit: string | null;
+  checked_url: string | null;
   error: string | null;
 };
 
@@ -37,6 +38,9 @@ export function getDeploymentInfo(): { env: string | null; commit: string | null
  */
 export async function runHealthCheck(): Promise<HealthCheck> {
   const deployment = getDeploymentInfo();
+  const checkedUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : siteConfig.url;
   let operational = false;
   let statusCode: number | null = null;
   let responseTimeMs: number | null = null;
@@ -45,7 +49,7 @@ export async function runHealthCheck(): Promise<HealthCheck> {
 
   const start = Date.now();
   try {
-    const response = await fetch(siteConfig.url, {
+    const response = await fetch(checkedUrl, {
       method: "GET",
       redirect: "follow",
       signal: AbortSignal.timeout(10_000),
@@ -57,12 +61,17 @@ export async function runHealthCheck(): Promise<HealthCheck> {
     // A successful fetch over https:// with no thrown error means Node
     // accepted the certificate chain — the closest honest signal of SSL
     // validity we can get without a dedicated TLS-inspection library.
-    sslValid = siteConfig.url.startsWith("https://");
+    sslValid = checkedUrl.startsWith("https://");
   } catch (err) {
     responseTimeMs = Date.now() - start;
     operational = false;
     sslValid = false;
-    error = err instanceof Error ? err.message : "Request failed";
+    const cause = err instanceof Error ? (err.cause as { code?: string; message?: string } | undefined) : undefined;
+    error = cause?.code
+      ? `Request failed (${cause.code})${cause.message ? `: ${cause.message}` : ""}`
+      : err instanceof Error
+        ? err.message
+        : "Request failed";
   }
 
   let performanceScore: number | null = null;
@@ -73,7 +82,7 @@ export async function runHealthCheck(): Promise<HealthCheck> {
 
   try {
     const apiKey = process.env.PAGESPEED_API_KEY;
-    const params = new URLSearchParams({ url: siteConfig.url, strategy: "mobile" });
+    const params = new URLSearchParams({ url: checkedUrl, strategy: "mobile" });
     ["performance", "accessibility", "seo", "best-practices"].forEach((c) => params.append("category", c));
     if (apiKey) params.set("key", apiKey);
 
@@ -110,6 +119,7 @@ export async function runHealthCheck(): Promise<HealthCheck> {
     scores_source: scoresSource,
     deployment_env: deployment.env,
     deployment_commit: deployment.commit,
+    checked_url: checkedUrl,
     error,
   };
 
@@ -117,13 +127,13 @@ export async function runHealthCheck(): Promise<HealthCheck> {
     const rows = await safeQuery<HealthCheck>(
       `insert into health_checks
         (operational, status_code, response_time_ms, ssl_valid, performance_score, accessibility_score,
-         seo_score, best_practices_score, scores_source, deployment_env, deployment_commit, error)
-       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+         seo_score, best_practices_score, scores_source, deployment_env, deployment_commit, checked_url, error)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
        returning *`,
       [
         result.operational, result.status_code, result.response_time_ms, result.ssl_valid,
         result.performance_score, result.accessibility_score, result.seo_score, result.best_practices_score,
-        result.scores_source, result.deployment_env, result.deployment_commit, result.error,
+        result.scores_source, result.deployment_env, result.deployment_commit, result.checked_url, result.error,
       ]
     );
     if (rows[0]) return rows[0];

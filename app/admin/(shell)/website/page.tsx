@@ -87,6 +87,16 @@ export default async function WebsiteHealthPage() {
 
             <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
               <div>
+                <p className="eyebrow">Checked URL</p>
+                {check.checked_url ? (
+                  <a href={check.checked_url} target="_blank" rel="noopener noreferrer" className="mt-1 block max-w-[220px] truncate text-sm text-signal-700 hover:underline">
+                    {check.checked_url}
+                  </a>
+                ) : (
+                  <p className="mt-1 text-sm text-ink-500">Not recorded for this older check</p>
+                )}
+              </div>
+              <div>
                 <p className="eyebrow">Status code</p>
                 <p className="mt-1 text-sm text-ink-800">{check.status_code ?? "—"}</p>
               </div>
