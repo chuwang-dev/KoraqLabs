@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getConsent, setConsent } from "@/lib/consent";
 import { trackEvent } from "@/lib/analytics";
 
 export function CookieConsent() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -13,7 +15,7 @@ export function CookieConsent() {
     setVisible(getConsent() === null);
   }, []);
 
-  if (!visible) return null;
+  if (!visible || pathname.startsWith("/admin")) return null;
 
   function choose(value: "granted" | "denied") {
     setConsent(value);

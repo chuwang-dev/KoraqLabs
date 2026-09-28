@@ -8,6 +8,7 @@ export function PageViewTracker() {
   const pathname = usePathname();
 
   useEffect(() => {
+    if (pathname.startsWith("/admin")) return;
     trackEvent("page_view");
   }, [pathname]);
 

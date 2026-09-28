@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { projects } from "@/lib/data";
+import { portfolioItems } from "@/lib/data";
 import { getSiteSettings } from "@/lib/site-settings";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -15,11 +15,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  const projectRoutes = projects.map((p) => ({
+  const projectRoutes = portfolioItems.map((p) => ({
     url: `${settings.url}/work/${p.slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
-    priority: p.status === "live" ? 0.6 : 0.4,
+    priority: p.isPlaceholder ? 0.4 : 0.6,
   }));
 
   return [...staticRoutes, ...projectRoutes];
