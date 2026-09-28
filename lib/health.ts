@@ -38,8 +38,11 @@ export function getDeploymentInfo(): { env: string | null; commit: string | null
  */
 export async function runHealthCheck(): Promise<HealthCheck> {
   const deployment = getDeploymentInfo();
-  const checkedUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
+  const vercelHost = deployment.env === "production"
+    ? process.env.VERCEL_PROJECT_PRODUCTION_URL
+    : process.env.VERCEL_URL;
+  const checkedUrl = vercelHost
+    ? `https://${vercelHost}`
     : siteConfig.url;
   let operational = false;
   let statusCode: number | null = null;
