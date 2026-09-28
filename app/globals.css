@@ -64,6 +64,49 @@
   }
 }
 
+/* Admin-only theme overrides; public pages retain their light palette. */
+.admin-theme-dark {
+  color: #f4f5f6;
+  background-color: #111318;
+}
+
+.admin-theme-dark .bg-paper-white,
+.admin-theme-dark .bg-paper {
+  background-color: #1b1f26;
+}
+
+.admin-theme-dark .bg-paper-soft {
+  background-color: #111318;
+}
+
+.admin-theme-dark .text-ink-900,
+.admin-theme-dark .text-ink-800,
+.admin-theme-dark .text-ink-700,
+.admin-theme-dark .text-ink-600 {
+  color: #f4f5f6;
+}
+
+.admin-theme-dark .text-ink-500,
+.admin-theme-dark .text-ink-400 {
+  color: #aeb5bf;
+}
+
+.admin-theme-dark [class*="border-ink-900"] {
+  border-color: rgb(255 255 255 / 14%);
+}
+
+.admin-theme-dark input,
+.admin-theme-dark textarea,
+.admin-theme-dark select {
+  color: #f4f5f6;
+  background-color: #1b1f26;
+}
+
+.admin-theme-dark input::placeholder,
+.admin-theme-dark textarea::placeholder {
+  color: #8d96a2;
+}
+
 .marquee-track {
   animation: marquee 38s linear infinite;
 }
