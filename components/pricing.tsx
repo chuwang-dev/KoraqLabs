@@ -1,15 +1,18 @@
 import { SectionHeading } from "@/components/section-heading";
 import { CtaButton } from "@/components/cta-button";
-import { pricingPackages } from "@/lib/data";
+import type { SiteContent } from "@/lib/site-content";
 
-export function Pricing() {
+export function Pricing({ content }: { content: SiteContent }) {
+  const section = content.home.pricing;
+  if (!section.enabled) return null;
+
   return (
     <section id="pricing" className="section-pad scroll-mt-[65px] border-b border-ink-900/10">
       <div className="container-page">
-        <SectionHeading title="Simple Packages. Clear Pricing." />
+        <SectionHeading title={section.title} />
 
         <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {pricingPackages.map((pkg) => (
+          {content.collections.pricingPackages.map((pkg) => (
             <div
               key={pkg.slug}
               className="flex flex-col rounded-md border border-ink-900/10 bg-paper p-8"

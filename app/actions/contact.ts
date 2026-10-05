@@ -38,11 +38,21 @@ export async function submitContactForm(
     return { status: "success" };
   }
 
+  const validationMessage =
+    getString(formData, "validationMessage").slice(0, 300) ||
+    "Please check the highlighted fields and try again.";
+  const successMessage =
+    getString(formData, "successMessage").slice(0, 300) ||
+    "Thanks — we've received your project details and will be in touch shortly.";
+  const errorMessage =
+    getString(formData, "errorMessage").slice(0, 300) ||
+    "Something went wrong sending your message. Please try again or reach us on WhatsApp.";
+
   const errors = validateContactForm(values);
   if (Object.keys(errors).length > 0) {
     return {
       status: "error",
-      message: "Please check the highlighted fields and try again.",
+      message: validationMessage,
       errors,
     };
   }
@@ -81,14 +91,13 @@ export async function submitContactForm(
 
     return {
       status: "success",
-      message: "Thanks — we've received your project details and will be in touch shortly.",
+      message: successMessage,
     };
   } catch (error) {
     console.error("Failed to send contact form email:", error);
     return {
       status: "error",
-      message:
-        "Something went wrong sending your message. Please try again or reach us on WhatsApp.",
+      message: errorMessage,
     };
   }
 }

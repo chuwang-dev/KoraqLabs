@@ -14,6 +14,7 @@ export type HealthCheck = {
   seo_score: number | null;
   best_practices_score: number | null;
   scores_source: string | null;
+  scores_error: string | null;
   deployment_env: string | null;
   deployment_commit: string | null;
   checked_url: string | null;
@@ -82,6 +83,7 @@ export async function runHealthCheck(): Promise<HealthCheck> {
   let seoScore: number | null = null;
   let bestPracticesScore: number | null = null;
   let scoresSource: string | null = null;
+  let scoresError: string | null = null;
 
   try {
     const apiKey = process.env.PAGESPEED_API_KEY;
@@ -94,8 +96,11 @@ export async function runHealthCheck(): Promise<HealthCheck> {
       { signal: AbortSignal.timeout(25_000), cache: "no-store" }
     );
 
-    if (psiResponse.ok) {
-      const data = await psiResponse.json();
+    const data = await psiResponse.json().catch(() => null);
+    if (!psiResponse.ok) {
+      const detail = typeof data?.error?.message === "string" ? data.error.message : psiResponse.statusText;
+      scoresError = `PageSpeed Insights returned ${psiResponse.status}: ${detail}`.slice(0, 500);
+    } else {
       const categories = data?.lighthouseResult?.categories;
       if (categories) {
         performanceScore = scoreFrom(categories.performance);
@@ -103,11 +108,14 @@ export async function runHealthCheck(): Promise<HealthCheck> {
         seoScore = scoreFrom(categories.seo);
         bestPracticesScore = scoreFrom(categories["best-practices"]);
         scoresSource = "Google PageSpeed Insights";
+      } else {
+        scoresError = "PageSpeed Insights returned no Lighthouse categories.";
       }
     }
-  } catch {
+  } catch (err) {
     // PageSpeed is best-effort — reachability/uptime above is the part that
     // must not fail silently, so we don't let a PSI timeout affect it.
+    scoresError = err instanceof Error ? err.message.slice(0, 500) : "PageSpeed Insights request failed.";
   }
 
   const result: Omit<HealthCheck, "id" | "checked_at"> = {
@@ -120,6 +128,7 @@ export async function runHealthCheck(): Promise<HealthCheck> {
     seo_score: seoScore,
     best_practices_score: bestPracticesScore,
     scores_source: scoresSource,
+    scores_error: scoresError,
     deployment_env: deployment.env,
     deployment_commit: deployment.commit,
     checked_url: checkedUrl,
@@ -130,13 +139,14 @@ export async function runHealthCheck(): Promise<HealthCheck> {
     const rows = await safeQuery<HealthCheck>(
       `insert into health_checks
         (operational, status_code, response_time_ms, ssl_valid, performance_score, accessibility_score,
-         seo_score, best_practices_score, scores_source, deployment_env, deployment_commit, checked_url, error)
-       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+         seo_score, best_practices_score, scores_source, scores_error, deployment_env, deployment_commit, checked_url, error)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
        returning *`,
       [
         result.operational, result.status_code, result.response_time_ms, result.ssl_valid,
         result.performance_score, result.accessibility_score, result.seo_score, result.best_practices_score,
-        result.scores_source, result.deployment_env, result.deployment_commit, result.checked_url, result.error,
+        result.scores_source, result.scores_error, result.deployment_env, result.deployment_commit,
+        result.checked_url, result.error,
       ]
     );
     if (rows[0]) return rows[0];

@@ -17,7 +17,7 @@ export default async function AdminLoginPage({
   return (
     <div className="flex min-h-screen items-center justify-center bg-ink-900 px-6 py-12">
       <div className="grid-bg-dark absolute inset-0 opacity-40" aria-hidden />
-      <div className="relative w-full max-w-sm rounded-lg border border-white/10 bg-paper p-8 shadow-2xl">
+      <div className="relative w-full max-w-sm rounded-lg border border-white/10 bg-paper p-6 shadow-2xl sm:p-8">
         <div className="mb-8">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
             Koraq Labs

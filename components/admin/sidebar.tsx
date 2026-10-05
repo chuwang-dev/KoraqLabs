@@ -9,6 +9,7 @@ const NAV = [
   { label: "Projects", href: "/admin/projects" },
   { label: "Testimonials", href: "/admin/testimonials" },
   { label: "FAQs", href: "/admin/faqs" },
+  { label: "Site Content", href: "/admin/content" },
   { label: "Website", href: "/admin/website" },
   { label: "Activity", href: "/admin/activity" },
   { label: "Settings", href: "/admin/settings" },
@@ -26,7 +27,7 @@ export function AdminNavLinks({ onNavigate }: { onNavigate?: () => void }) {
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            className={`rounded px-3 py-2 text-sm font-medium transition-colors ${
+            className={`flex min-h-11 items-center rounded px-3 py-2 text-sm font-medium transition-colors ${
               active
                 ? "bg-ink-900 text-paper"
                 : "text-ink-600 hover:bg-ink-900/5 hover:text-ink-900"

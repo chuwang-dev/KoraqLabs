@@ -1,13 +1,13 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import type { Faq } from "@/lib/admin-data";
 import { initialSaveFormState } from "@/lib/admin-form-state";
 import { saveFaq } from "@/app/admin/(shell)/faqs/actions";
 import { SaveButton, FormStatusBanner } from "@/components/admin/form-status";
 
 export function FaqForm({ faq }: { faq?: Faq }) {
-  const [state, formAction] = useFormState(saveFaq, initialSaveFormState);
+  const [state, formAction] = useActionState(saveFaq, initialSaveFormState);
 
   return (
     <form action={formAction} className="mt-4 space-y-4">

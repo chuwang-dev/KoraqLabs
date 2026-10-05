@@ -4,6 +4,7 @@ import { getAdminEmail, isTwoFactorEnabled } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getSiteSettings } from "@/lib/site-settings";
 import { revokeAllSessions } from "@/app/admin/actions";
+import { ChangePasswordForm } from "@/components/admin/change-password-form";
 import { updateSiteSettings } from "./actions";
 
 export const metadata: Metadata = { title: "Settings — Koraq Labs Admin" };
@@ -39,13 +40,13 @@ export default async function SettingsPage() {
           <Row label="Session length" value="8 hours" />
           <Row label="Two-factor authentication" value={isTwoFactorEnabled() ? "Enabled" : "Not enabled"} />
         </div>
-        <div className="mt-4 rounded border border-amber-500/25 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-800">
-          To change the admin password: generate a new bcrypt hash locally (
-          <code className="font-mono">node scripts/hash-password.js &quot;new-password&quot;</code>), then
-          update <code className="font-mono">ADMIN_PASSWORD_HASH</code> in your deployment&rsquo;s
-          environment variables and redeploy. This keeps the password out of the database and the UI
-          entirely.
-        </div>
+        {isDatabaseConfigured() ? (
+          <ChangePasswordForm />
+        ) : (
+          <div className="mt-4 rounded border border-amber-500/25 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-800">
+            Password changes here require <code className="font-mono">DATABASE_URL</code>. Without a database, update <code className="font-mono">ADMIN_PASSWORD_HASH</code> in the deployment environment and redeploy.
+          </div>
+        )}
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded border border-ink-900/10 p-4">
           <div>
             <p className="text-sm font-medium text-ink-800">Two-factor authentication</p>

@@ -1,19 +1,21 @@
 import Link from "next/link";
 import Image from "next/image";
-import { primaryNav } from "@/lib/config";
 import { MobileMenu } from "@/components/mobile-menu";
 import { CtaButton } from "@/components/cta-button";
 import { getSiteSettings } from "@/lib/site-settings";
+import type { SiteContent } from "@/lib/site-content";
 
 export async function Navbar({
   brandName,
   whatsappNumber,
   whatsappDisplay,
+  content,
 }: {
   brandName?: string;
   whatsappNumber?: string;
   whatsappDisplay?: string;
-} = {}) {
+  content: SiteContent;
+}) {
   const { settings } = await getSiteSettings();
   const activeBrandName = brandName ?? settings.name;
   const activeWhatsappNumber = whatsappNumber ?? settings.whatsappNumber;
@@ -36,7 +38,7 @@ export async function Navbar({
 
         <nav className="hidden md:block">
           <ul className="flex items-center gap-8">
-            {primaryNav.map((item) => (
+            {content.navigation.primary.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -50,10 +52,18 @@ export async function Navbar({
         </nav>
 
         <div className="hidden md:block">
-          <CtaButton href="/contact">Start a Project</CtaButton>
+          <CtaButton href={content.navigation.primaryCtaHref}>{content.navigation.primaryCta}</CtaButton>
         </div>
 
-        <MobileMenu whatsappNumber={activeWhatsappNumber} whatsappDisplay={activeWhatsappDisplay} />
+        <MobileMenu
+          primaryLinks={content.navigation.primary}
+          primaryCtaLabel={content.navigation.primaryCta}
+          primaryCtaHref={content.navigation.primaryCtaHref}
+          whatsappLabel={content.pages.contact.whatsappLabel}
+          whatsappMessage={content.pages.contact.whatsappMessage}
+          whatsappNumber={activeWhatsappNumber}
+          whatsappDisplay={activeWhatsappDisplay}
+        />
       </div>
     </header>
   );

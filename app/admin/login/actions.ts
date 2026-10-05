@@ -8,6 +8,7 @@ import {
   clearPendingTwoFactor,
   createSession,
   getPendingTwoFactorEmail,
+  isAdminLoginConfigured,
   isTwoFactorEnabled,
   setPendingTwoFactor,
   verifyAdminCredentials,
@@ -45,6 +46,14 @@ function tooManyAttempts(retryAfterSeconds: number): LoginState {
 
 /** Step 1: email + password. Continues to step 2 if two-factor is enabled. */
 export async function login(_prevState: LoginState, formData: FormData): Promise<LoginState> {
+  if (!(await isAdminLoginConfigured())) {
+    return {
+      status: "error",
+      message:
+        "Admin sign-in is not configured here yet. Set ADMIN_EMAIL, ADMIN_PASSWORD_HASH, and a 16-character-or-longer AUTH_SECRET, then restart the server.",
+    };
+  }
+
   const email = getString(formData, "email");
   const password = getString(formData, "password");
   const redirectTo = safeRedirect(getString(formData, "redirectTo"));

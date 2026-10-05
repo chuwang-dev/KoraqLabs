@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { submitContactForm, type ContactActionState } from "@/app/actions/contact";
-import { budgetRanges, businessTypes, projectNeeds } from "@/lib/data";
 import { FieldWrapper, inputClass } from "@/components/form-field";
 import { trackEvent } from "@/lib/analytics";
+import type { SiteContent } from "@/lib/site-content";
 
 const initialState: ContactActionState = { status: "idle" };
 
-function SubmitButton() {
+function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: string }) {
   const { pending } = useFormStatus();
   return (
     <button
@@ -17,14 +18,16 @@ function SubmitButton() {
       disabled={pending}
       className="inline-flex w-full items-center justify-center rounded bg-ink-900 px-5 py-3.5 text-[15px] font-medium text-paper transition-colors duration-200 hover:bg-ink-700 disabled:opacity-60 sm:w-auto"
     >
-      {pending ? "Sending…" : "Start My Project"}
+      {pending ? pendingLabel : label}
     </button>
   );
 }
 
-export function ContactForm() {
-  const [state, formAction] = useFormState(submitContactForm, initialState);
+export function ContactForm({ content }: { content: SiteContent }) {
+  const [state, formAction] = useActionState(submitContactForm, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+  const form = content.form;
+  const fields = form.fields;
 
   useEffect(() => {
     if (state.status === "success") {
@@ -37,6 +40,9 @@ export function ContactForm() {
 
   return (
     <form ref={formRef} action={formAction} noValidate className="space-y-6">
+      <input type="hidden" name="validationMessage" value={form.validationMessage} />
+      <input type="hidden" name="successMessage" value={form.successMessage} />
+      <input type="hidden" name="errorMessage" value={form.errorMessage} />
       {/* Honeypot — hidden from real visitors, catches basic bots */}
       <div className="hidden" aria-hidden="true">
         <label htmlFor="company">Company</label>
@@ -44,35 +50,35 @@ export function ContactForm() {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <FieldWrapper label="Name" htmlFor="name" error={errors.name}>
-          <input id="name" name="name" type="text" required className={inputClass} placeholder="Your full name" />
+        <FieldWrapper label={fields.name.label} htmlFor="name" error={errors.name}>
+          <input id="name" name="name" type="text" required className={inputClass} placeholder={fields.name.placeholder} />
         </FieldWrapper>
 
-        <FieldWrapper label="Business name" htmlFor="businessName" error={errors.businessName}>
+        <FieldWrapper label={fields.businessName.label} htmlFor="businessName" error={errors.businessName}>
           <input
             id="businessName"
             name="businessName"
             type="text"
             required
             className={inputClass}
-            placeholder="Your business name"
+            placeholder={fields.businessName.placeholder}
           />
         </FieldWrapper>
 
-        <FieldWrapper label="Email" htmlFor="email" error={errors.email}>
-          <input id="email" name="email" type="email" required className={inputClass} placeholder="you@business.com" />
+        <FieldWrapper label={fields.email.label} htmlFor="email" error={errors.email}>
+          <input id="email" name="email" type="email" required className={inputClass} placeholder={fields.email.placeholder} />
         </FieldWrapper>
 
-        <FieldWrapper label="Phone / WhatsApp" htmlFor="phone" error={errors.phone}>
-          <input id="phone" name="phone" type="tel" required className={inputClass} placeholder="0801 234 5678" />
+        <FieldWrapper label={fields.phone.label} htmlFor="phone" error={errors.phone}>
+          <input id="phone" name="phone" type="tel" required className={inputClass} placeholder={fields.phone.placeholder} />
         </FieldWrapper>
 
-        <FieldWrapper label="Business type" htmlFor="businessType" error={errors.businessType}>
+        <FieldWrapper label={fields.businessType.label} htmlFor="businessType" error={errors.businessType}>
           <select id="businessType" name="businessType" required defaultValue="" className={inputClass}>
             <option value="" disabled>
-              Select your industry
+              {fields.businessType.placeholder}
             </option>
-            {businessTypes.map((type) => (
+            {content.collections.businessTypes.map((type) => (
               <option key={type} value={type}>
                 {type}
               </option>
@@ -80,12 +86,12 @@ export function ContactForm() {
           </select>
         </FieldWrapper>
 
-        <FieldWrapper label="What do you need?" htmlFor="need" error={errors.need}>
+        <FieldWrapper label={fields.need.label} htmlFor="need" error={errors.need}>
           <select id="need" name="need" required defaultValue="" className={inputClass}>
             <option value="" disabled>
-              Select an option
+              {fields.need.placeholder}
             </option>
-            {projectNeeds.map((need) => (
+            {content.collections.projectNeeds.map((need) => (
               <option key={need} value={need}>
                 {need}
               </option>
@@ -93,22 +99,22 @@ export function ContactForm() {
           </select>
         </FieldWrapper>
 
-        <FieldWrapper label="Current website URL" htmlFor="currentWebsite" optional>
+        <FieldWrapper label={fields.currentWebsite.label} htmlFor="currentWebsite" optional>
           <input
             id="currentWebsite"
             name="currentWebsite"
             type="text"
             className={inputClass}
-            placeholder="If you already have one"
+            placeholder={fields.currentWebsite.placeholder}
           />
         </FieldWrapper>
 
-        <FieldWrapper label="Budget range" htmlFor="budget" error={errors.budget}>
+        <FieldWrapper label={fields.budget.label} htmlFor="budget" error={errors.budget}>
           <select id="budget" name="budget" required defaultValue="" className={inputClass}>
             <option value="" disabled>
-              Select a range
+              {fields.budget.placeholder}
             </option>
-            {budgetRanges.map((range) => (
+            {content.collections.budgetRanges.map((range) => (
               <option key={range} value={range}>
                 {range}
               </option>
@@ -117,19 +123,19 @@ export function ContactForm() {
         </FieldWrapper>
       </div>
 
-      <FieldWrapper label="Project description" htmlFor="description" error={errors.description}>
+      <FieldWrapper label={fields.description.label} htmlFor="description" error={errors.description}>
         <textarea
           id="description"
           name="description"
           required
           rows={5}
           className={inputClass}
-          placeholder="Tell us about your business and what you'd like your website to do."
+          placeholder={fields.description.placeholder}
         />
       </FieldWrapper>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <SubmitButton />
+        <SubmitButton label={form.submitLabel} pendingLabel={form.submittingLabel} />
         {state.status === "success" ? (
           <p role="status" className="text-[14px] text-signal-700">
             {state.message}

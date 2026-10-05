@@ -1,17 +1,20 @@
 import { SectionHeading } from "@/components/section-heading";
-import { whyPoints } from "@/lib/data";
+import type { SiteContent } from "@/lib/site-content";
 import { IconTarget, IconPhone, IconBolt, IconSprout } from "@/components/icons";
 
 const icons = [IconTarget, IconPhone, IconBolt, IconSprout];
 
-export function WhyUs() {
+export function WhyUs({ content }: { content: SiteContent }) {
+  const section = content.home.whyUs;
+  if (!section.enabled) return null;
+
   return (
     <section className="section-pad border-b border-ink-900/10 bg-paper-soft">
       <div className="container-page">
-        <SectionHeading title="Why Businesses Choose Koraq Labs" />
+        <SectionHeading title={section.title} />
 
         <div className="mt-14 grid gap-10 sm:grid-cols-2">
-          {whyPoints.map((point, i) => {
+          {content.collections.whyPoints.map((point, i) => {
             const Icon = icons[i % icons.length];
             return (
               <div key={point.title} className="flex gap-5">

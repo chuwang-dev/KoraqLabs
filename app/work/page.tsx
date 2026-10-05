@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { PortfolioCard } from "@/components/portfolio-card";
 import { getPublicPortfolio } from "@/lib/public-data";
+import { getSiteContent } from "@/lib/site-content";
 
-export const metadata: Metadata = {
-  title: "Our Work",
-  description:
-    "A look at the websites and landing pages Koraq Labs designs and builds for Nigerian businesses.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { content } = await getSiteContent();
+  return {
+    title: content.pages.work.seoTitle,
+    description: content.pages.work.seoDescription,
+  };
+}
 
 export default async function WorkPage() {
+  const { content } = await getSiteContent();
   const portfolioItems = await getPublicPortfolio();
 
   return (
@@ -16,12 +20,10 @@ export default async function WorkPage() {
       <section className="border-b border-ink-900/10 section-pad !pb-14">
         <div className="container-page">
           <h1 className="max-w-2xl font-display text-4xl leading-[1.15] text-ink-900 md:text-5xl">
-            Our Work
+            {content.pages.work.title}
           </h1>
           <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-ink-500">
-            Real websites. Real businesses. Built to solve real problems. We&apos;re
-            just getting started — the projects below are labeled demo
-            concepts until we can showcase real client work.
+            {content.pages.work.description}
           </p>
         </div>
       </section>

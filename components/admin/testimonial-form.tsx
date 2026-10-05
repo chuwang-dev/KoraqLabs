@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import type { Testimonial } from "@/lib/admin-data";
 import { initialSaveFormState } from "@/lib/admin-form-state";
 import { saveTestimonial } from "@/app/admin/(shell)/testimonials/actions";
@@ -8,7 +8,7 @@ import { SaveButton, FormStatusBanner } from "@/components/admin/form-status";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 
 export function TestimonialForm({ testimonial }: { testimonial?: Testimonial }) {
-  const [state, formAction] = useFormState(saveTestimonial, initialSaveFormState);
+  const [state, formAction] = useActionState(saveTestimonial, initialSaveFormState);
 
   return (
     <form action={formAction} className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">

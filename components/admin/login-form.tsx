@@ -1,6 +1,7 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { login, verifyTwoFactor, type LoginState } from "@/app/admin/login/actions";
 
 const initialState: LoginState = { status: "idle" };
@@ -38,8 +39,8 @@ const inputClass =
   "w-full rounded border border-ink-900/15 bg-paper-white px-3.5 py-2.5 text-[15px] text-ink-900 outline-none transition-colors focus:border-signal-500";
 
 export function LoginForm({ redirectTo }: { redirectTo: string }) {
-  const [loginState, loginAction] = useFormState(login, initialState);
-  const [codeState, codeAction] = useFormState(verifyTwoFactor, initialState);
+  const [loginState, loginAction] = useActionState(login, initialState);
+  const [codeState, codeAction] = useActionState(verifyTwoFactor, initialState);
 
   const needsCode = loginState.status === "needs_code" && codeState.status !== "expired";
 

@@ -136,6 +136,14 @@ export default async function WebsiteHealthPage() {
                 {check.scores_source ?? "Unavailable for this check"}
               </p>
             </div>
+            {check.scores_error ? (
+              <p className="mb-3 rounded border border-amber-500/25 bg-amber-500/5 px-3 py-2 text-xs text-amber-800">
+                {check.scores_error}
+                {check.scores_error.toLowerCase().includes("quota")
+                  ? " Add a Google PageSpeed API key as PAGESPEED_API_KEY in Vercel, then run a new check."
+                  : ""}
+              </p>
+            ) : null}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <ScoreCard label="Performance" score={check.performance_score} />
               <ScoreCard label="Accessibility" score={check.accessibility_score} />

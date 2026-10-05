@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { siteConfig } from "@/lib/config";
+import { getSiteSettings } from "@/lib/site-settings";
+import { ConsentGatedGA } from "@/components/consent-gated-ga";
+import { PageViewTracker } from "@/components/page-view-tracker";
+import { CookieConsent } from "@/components/cookie-consent";
+import { getSiteContent } from "@/lib/site-content";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -21,71 +24,71 @@ const manrope = Manrope({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: "Koraq Labs — Websites That Help Nigerian Businesses Grow and Scale",
-    template: "%s — Koraq Labs",
-  },
-  description: siteConfig.description,
-  keywords: [
-    "website development Nigeria",
-    "website design Nigeria",
-    "business website Nigeria",
-    "website design Abuja",
-    "website developer Lagos",
-    "website development Lagos",
-    "landing page design Nigeria",
-    "web development company Nigeria",
-  ],
-  openGraph: {
-    title: "Koraq Labs — Websites That Help Nigerian Businesses Grow and Scale",
-    description: siteConfig.description,
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    locale: "en_NG",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Koraq Labs — Websites That Help Nigerian Businesses Grow and Scale",
-    description: siteConfig.description,
-  },
-  icons: {
-    icon: "/icons/favicon.svg",
-  },
-  manifest: "/site.webmanifest",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { settings } = await getSiteSettings();
+  return {
+    metadataBase: new URL(settings.url),
+    title: {
+      default: `${settings.name} — ${settings.tagline}`,
+      template: `%s — ${settings.name}`,
+    },
+    description: settings.description,
+    keywords: [
+      "website development Nigeria",
+      "website design Nigeria",
+      "business website Nigeria",
+      "website design Abuja",
+      "website developer Lagos",
+      "website development Lagos",
+      "landing page design Nigeria",
+      "web development company Nigeria",
+    ],
+    openGraph: {
+      title: `${settings.name} — ${settings.tagline}`,
+      description: settings.description,
+      url: settings.url,
+      siteName: settings.name,
+      locale: "en_NG",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${settings.name} — ${settings.tagline}`,
+      description: settings.description,
+    },
+    icons: {
+      icon: "/icons/favicon.svg",
+    },
+    manifest: "/site.webmanifest",
+  };
+}
 
-const gaId = process.env.NEXT_PUBLIC_GA_ID;
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [{ settings }, { content }] = await Promise.all([
+    getSiteSettings(),
+    getSiteContent(),
+  ]);
+
   return (
     <html lang="en" className={`${fraunces.variable} ${manrope.variable}`}>
       <body className="flex min-h-screen flex-col font-sans">
-        {gaId ? (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga-init" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${gaId}');
-              `}
-            </Script>
-          </>
+        {process.env.NEXT_PUBLIC_GA_ID ? (
+          <ConsentGatedGA gaId={process.env.NEXT_PUBLIC_GA_ID} />
         ) : null}
-        <Navbar />
+        <PageViewTracker />
+        <Navbar
+          brandName={settings.name}
+          whatsappNumber={settings.whatsappNumber}
+          whatsappDisplay={settings.whatsappDisplay}
+          content={content}
+        />
         <main className="flex-1">{children}</main>
-        <Footer />
+        <Footer content={content} />
+        <CookieConsent content={content.consent} />
       </body>
     </html>
   );

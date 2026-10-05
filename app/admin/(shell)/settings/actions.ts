@@ -1,13 +1,24 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getAdminEmail } from "@/lib/auth";
+import {
+  changeAdminPassword as changePassword,
+  destroyOtherSessions,
+  getAdminEmail,
+  getSession,
+} from "@/lib/auth";
 import { logActivity } from "@/lib/admin-data";
 import { saveSiteSettings, type SiteSettings } from "@/lib/site-settings";
+import type { SaveFormState } from "@/lib/admin-form-state";
 
 function getString(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
+}
+
+function getRawString(formData: FormData, key: string) {
+  const value = formData.get(key);
+  return typeof value === "string" ? value : "";
 }
 
 function isHttpUrl(value: string) {
@@ -65,4 +76,41 @@ export async function updateSiteSettings(formData: FormData): Promise<void> {
   revalidatePath("/admin/settings");
   revalidatePath("/robots.txt");
   revalidatePath("/sitemap.xml");
+}
+
+export async function changeAdminPassword(
+  _previousState: SaveFormState,
+  formData: FormData
+): Promise<SaveFormState> {
+  const email = await getAdminEmail();
+  if (!email) {
+    return { status: "error", message: "Your session has expired — please log in again." };
+  }
+
+  const currentPassword = getRawString(formData, "currentPassword");
+  const newPassword = getRawString(formData, "newPassword");
+  const confirmPassword = getRawString(formData, "confirmPassword");
+
+  const newPasswordBytes = Buffer.byteLength(newPassword, "utf8");
+  if (newPassword.length < 12 || newPasswordBytes > 72) {
+    return { status: "error", message: "Choose a password between 12 and 72 characters." };
+  }
+  if (newPassword !== confirmPassword) {
+    return { status: "error", message: "The new passwords do not match." };
+  }
+  if (currentPassword === newPassword) {
+    return { status: "error", message: "Choose a password different from your current one." };
+  }
+
+  const result = await changePassword(email, currentPassword, newPassword);
+  if (!result.ok) return { status: "error", message: result.error };
+
+  const session = await getSession();
+  const revokedSessions = session ? await destroyOtherSessions(email, session.jti) : 0;
+  await logActivity(email, "admin_password_changed", "Admin password changed");
+  revalidatePath("/admin/settings");
+  return {
+    status: "success",
+    message: `Password changed. ${revokedSessions} other session${revokedSessions === 1 ? " was" : "s were"} signed out.`,
+  };
 }

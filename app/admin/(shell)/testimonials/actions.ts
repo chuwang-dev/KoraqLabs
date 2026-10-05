@@ -50,6 +50,7 @@ export async function saveTestimonial(_prevState: SaveFormState, formData: FormD
 
   await logActivity(email, id ? "testimonial_updated" : "testimonial_created", clientName);
   revalidatePath("/admin/testimonials");
+  revalidatePath("/", "page");
   return { status: "success", message: id ? "Testimonial updated." : "Testimonial added." };
 }
 
@@ -78,6 +79,7 @@ export async function togglePublished(id: string, published: boolean): Promise<v
     existing.client_name
   );
   revalidatePath("/admin/testimonials");
+  revalidatePath("/", "page");
 }
 
 export async function removeTestimonial(id: string, clientName: string): Promise<void> {
@@ -86,4 +88,5 @@ export async function removeTestimonial(id: string, clientName: string): Promise
   await deleteTestimonial(id);
   await logActivity(email, "testimonial_deleted", clientName);
   revalidatePath("/admin/testimonials");
+  revalidatePath("/", "page");
 }

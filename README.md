@@ -34,7 +34,7 @@ Real project screenshots and the brand logo already live in `public/images/`
 | `NEXT_PUBLIC_GA_ID` | Google Analytics ID. The script is omitted entirely if unset. |
 | `DATABASE_URL` | Postgres connection string. Leave blank to run the admin dashboard in demo-data mode. |
 | `ADMIN_EMAIL` | The one administrator's login email. |
-| `ADMIN_PASSWORD_HASH` | Bcrypt hash of the admin password — generate with `npm run hash-password -- "your-password"`. Never the plaintext password. |
+| `ADMIN_PASSWORD_HASH` | Bcrypt hash of the admin password — generate with `npm run hash-password` to enter it without echoing it or placing it in shell history. Never store the plaintext password. |
 | `AUTH_SECRET` | Random secret signing admin session cookies. Generate with `openssl rand -base64 32`. |
 
 ---
@@ -49,11 +49,11 @@ from `robots.txt` and the sitemap.
 
 1. **Generate credentials**
    ```bash
-   npm run hash-password -- "choose-a-strong-password"
-   openssl rand -base64 32   # → AUTH_SECRET
+  npm run admin:setup
    ```
-   Put the results, plus `ADMIN_EMAIL`, into your deployment's environment
-   variables (never into a committed `.env` file).
+  Enter the admin email and a new password twice at the hidden prompts. This
+  writes the bcrypt hash and a generated session secret to `.env.local`; restart
+  the dev server afterward. Do not commit `.env.local`.
 
 2. **(Optional) connect a database.** Without `DATABASE_URL`, `/admin/login`
    and every dashboard page still work, but every number is demo data,
@@ -84,14 +84,17 @@ from `robots.txt` and the sitemap.
   Pricing → Started Project → Contacted Koraq → Qualified Lead).
 - **Leads** — every contact-form submission, with a status pipeline (New →
   Contacted → Qualified → Proposal Sent → Won/Lost) and a detail view.
-- **FAQs** — edits go live on the public site. Once you publish at least
-  one FAQ in the admin, the database list replaces the built-in FAQs in
-  `lib/data.ts` on `/faq`, the homepage and `/contact` (so add your full
-  set, not just one). With none published, the built-in list is shown.
-- **Projects / Testimonials** — full add/edit/delete with image upload, but
-  **not yet shown on the public website**: `/work` still renders the
-  portfolio defined in `lib/data.ts`, and there is no public testimonials
-  section yet. Treat these as a content workspace until that is wired up.
+- **FAQs** — manage published questions and answers for `/faq` and the
+  homepage. Built-in FAQs are used when `DATABASE_URL` is not configured.
+- **Projects / Testimonials** — add, edit, publish, and remove portfolio
+  projects and testimonials. Published projects appear on `/work` and its
+  detail pages; published testimonials appear on the homepage.
+- **Site Content** — edit homepage sections, About/Services/Work/FAQ/Contact
+  copy, page metadata, service and pricing lists, navigation, contact form
+  labels/options, consent copy, and the privacy policy from `/admin/content`.
+  Homepage sections can be hidden individually. This content is stored in the
+  `site_settings` JSONB table and uses built-in defaults until saved. Review
+  legal copy before publishing changes to the privacy policy.
 - **Website** — a real, on-demand health check: fetches the live site to
   measure reachability, response time, and SSL, and (best-effort) pulls
   Lighthouse Performance/Accessibility/SEO/Best Practices scores from
@@ -104,8 +107,14 @@ from `robots.txt` and the sitemap.
 - **Settings** — edit the site name, tagline, description, canonical URL,
   contact details, WhatsApp number, and social links. The public navbar,
   footer, contact sections, metadata, robots file, and sitemap use the saved
-  values. Authentication secrets remain environment-driven. The same page
-  links to authenticator-based 2FA setup and session revocation.
+  values. Set `ADMIN_EMAIL`, an initial `ADMIN_PASSWORD_HASH`, and `AUTH_SECRET`
+  for first login. Afterward, change the password from Settings; the new bcrypt
+  hash is stored in Postgres. `AUTH_SECRET` and 2FA secrets remain environment-driven.
+  The same page links to authenticator-based 2FA setup and session revocation.
+
+Page layout, styling, and interactive behavior remain code-controlled.
+Database-backed content editing requires `DATABASE_URL`; analytics credentials
+and authentication secrets stay in deployment environment variables.
 
 ### Security notes
 

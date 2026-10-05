@@ -3,15 +3,25 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { IconMenu, IconClose } from "@/components/icons";
-import { primaryNav } from "@/lib/config";
 import { trackEvent } from "@/lib/analytics";
+import type { SiteContent } from "@/lib/site-content";
 
 export function MobileMenu({
-  whatsappNumber = "2348143832354",
-  whatsappDisplay = "0814 383 2354",
+  primaryLinks,
+  primaryCtaLabel,
+  primaryCtaHref,
+  whatsappLabel,
+  whatsappMessage,
+  whatsappNumber,
+  whatsappDisplay,
 }: {
-  whatsappNumber?: string;
-  whatsappDisplay?: string;
+  primaryLinks: SiteContent["navigation"]["primary"];
+  primaryCtaLabel: string;
+  primaryCtaHref: string;
+  whatsappLabel: string;
+  whatsappMessage: string;
+  whatsappNumber: string;
+  whatsappDisplay: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -29,7 +39,7 @@ export function MobileMenu({
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="flex h-10 w-10 items-center justify-center rounded text-ink-900"
+        className="flex h-11 w-11 items-center justify-center rounded text-ink-900"
       >
         {open ? <IconClose className="h-6 w-6" /> : <IconMenu className="h-6 w-6" />}
       </button>
@@ -38,7 +48,7 @@ export function MobileMenu({
         <div className="fixed inset-x-0 top-[68px] bottom-0 z-40 overflow-y-auto bg-paper">
           <nav className="container-page flex min-h-full flex-col justify-between gap-8 py-6 sm:py-8">
             <ul className="flex flex-col gap-1">
-              {primaryNav.map((item) => (
+              {primaryLinks.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -52,20 +62,20 @@ export function MobileMenu({
             </ul>
             <div className="flex flex-col gap-3">
               <Link
-                href="/contact"
+                href={primaryCtaHref}
                 onClick={() => setOpen(false)}
                 className="inline-flex items-center justify-center rounded bg-ink-900 px-5 py-3 text-[15px] font-medium text-paper"
               >
-                Start a Project
+                {primaryCtaLabel}
               </Link>
               <a
-                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hi, I'd like to talk about a website.")}`}
+                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent("whatsapp_click")}
                 className="inline-flex items-center justify-center rounded border border-ink-900/15 px-5 py-3 text-[15px] font-medium text-ink-900"
               >
-                WhatsApp {whatsappDisplay}
+                {whatsappLabel} {whatsappDisplay}
               </a>
             </div>
           </nav>

@@ -13,7 +13,7 @@ export function MobileAdminNav() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label="Toggle admin menu"
-        className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded border border-ink-900/15"
+        className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded border border-ink-900/15"
       >
         <span className={`h-[1.5px] w-[18px] bg-ink-900 transition-transform ${open ? "translate-y-[5px] rotate-45" : ""}`} />
         <span className={`h-[1.5px] w-[18px] bg-ink-900 transition-opacity ${open ? "opacity-0" : ""}`} />

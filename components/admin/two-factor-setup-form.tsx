@@ -1,12 +1,12 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { initialSaveFormState } from "@/lib/admin-form-state";
 import { verifyTwoFactorSetup } from "@/app/admin/(shell)/settings/two-factor/actions";
 import { SaveButton, FormStatusBanner } from "@/components/admin/form-status";
 
 export function TwoFactorSetupForm({ secret }: { secret: string }) {
-  const [state, formAction] = useFormState(verifyTwoFactorSetup, initialSaveFormState);
+  const [state, formAction] = useActionState(verifyTwoFactorSetup, initialSaveFormState);
   return (
     <form action={formAction} className="mt-4 space-y-3">
       <input type="hidden" name="secret" value={secret} />

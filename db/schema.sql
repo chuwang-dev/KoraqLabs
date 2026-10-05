@@ -130,6 +130,7 @@ create table if not exists health_checks (
   seo_score             integer,
   best_practices_score  integer,
   scores_source         text,             -- e.g. "Google PageSpeed Insights" — null if scores unavailable
+  scores_error          text,
   deployment_env        text,             -- from platform env vars where available
   deployment_commit     text,
   checked_url           text,
@@ -137,6 +138,7 @@ create table if not exists health_checks (
 );
 
 alter table health_checks add column if not exists checked_url text;
+alter table health_checks add column if not exists scores_error text;
 
 create index if not exists idx_health_checks_checked_at on health_checks (checked_at desc);
 

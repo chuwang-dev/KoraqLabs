@@ -23,35 +23,68 @@ export function hashPassword(plain: string): Promise<string> {
   return hash(plain, BCRYPT_ROUNDS);
 }
 
-/**
- * Verify admin credentials against environment-configured values.
- *
- * Single-admin, env-based auth by design: ADMIN_EMAIL is a plain env var,
- * ADMIN_PASSWORD_HASH is a bcrypt hash (never the plaintext password) also
- * set via env var. This keeps login working with zero database dependency,
- * which matters because the rest of the dashboard is designed to degrade to
- * demo data when DATABASE_URL isn't set — auth shouldn't be the thing that
- * blocks a first deploy.
- */
+export async function isAdminLoginConfigured(): Promise<boolean> {
+  const credentials = await getAdminCredentials();
+  return Boolean(
+    credentials && process.env.AUTH_SECRET && process.env.AUTH_SECRET.length >= 16
+  );
+}
+
+async function getAdminCredentials(): Promise<{ email: string; passwordHash: string } | null> {
+  if (isDatabaseConfigured()) {
+    const rows = await safeQuery<{
+      value: { email?: unknown; passwordHash?: unknown };
+    }>(`select value from site_settings where key = 'admin_credentials' limit 1`);
+    const saved = rows[0]?.value;
+    if (typeof saved?.email === "string" && typeof saved.passwordHash === "string") {
+      return { email: saved.email, passwordHash: saved.passwordHash };
+    }
+  }
+
+  const email = process.env.ADMIN_EMAIL;
+  const passwordHash = process.env.ADMIN_PASSWORD_HASH;
+  if (!email || !passwordHash) return null;
+  return { email, passwordHash };
+}
+
 export async function verifyAdminCredentials(
   email: string,
   password: string
 ): Promise<boolean> {
-  const adminEmail = process.env.ADMIN_EMAIL;
-  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
-
-  if (!adminEmail || !adminPasswordHash) {
-    console.error(
-      "ADMIN_EMAIL or ADMIN_PASSWORD_HASH is not set. See .env.example / README for setup."
-    );
+  const credentials = await getAdminCredentials();
+  if (!credentials) {
+    console.error("Admin credentials are not configured. See .env.example / README for setup.");
     return false;
   }
 
-  if (email.trim().toLowerCase() !== adminEmail.trim().toLowerCase()) {
+  if (email.trim().toLowerCase() !== credentials.email.trim().toLowerCase()) {
     return false;
   }
 
-  return compare(password, adminPasswordHash);
+  return compare(password, credentials.passwordHash);
+}
+
+export async function changeAdminPassword(
+  email: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!isDatabaseConfigured()) {
+    return { ok: false, error: "Password changes from Settings require DATABASE_URL." };
+  }
+  if (!(await verifyAdminCredentials(email, currentPassword))) {
+    return { ok: false, error: "Current password is incorrect." };
+  }
+
+  const passwordHash = await hashPassword(newPassword);
+  const result = await mutate(
+    `insert into site_settings (key, value, updated_at)
+     values ('admin_credentials', $1::jsonb, now())
+     on conflict (key) do update set value = excluded.value, updated_at = now()`,
+    [JSON.stringify({ email: email.trim().toLowerCase(), passwordHash })]
+  );
+
+  return result.ok ? { ok: true } : result;
 }
 
 export async function createSession(email: string) {
@@ -96,6 +129,15 @@ export async function destroyAllSessions(adminEmail: string): Promise<number> {
   const rows = await safeQuery<{ id: string }>(
     `delete from admin_sessions where admin_email = $1 returning id`,
     [adminEmail]
+  );
+  return rows.length;
+}
+
+export async function destroyOtherSessions(adminEmail: string, currentSessionId: string): Promise<number> {
+  if (!isDatabaseConfigured()) return 0;
+  const rows = await safeQuery<{ id: string }>(
+    `delete from admin_sessions where admin_email = $1 and id <> $2 returning id`,
+    [adminEmail, currentSessionId]
   );
   return rows.length;
 }

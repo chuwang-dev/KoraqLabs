@@ -1,22 +1,25 @@
 import { SectionHeading } from "@/components/section-heading";
 import { getPublicTestimonials } from "@/lib/public-data";
+import type { SiteContent } from "@/lib/site-content";
 
 // No real clients yet — this stays honest rather than fabricating quotes.
 // Once real testimonials exist, add them to lib/data.ts as a structured
 // array and map over them here.
 
-export async function Testimonials() {
+export async function Testimonials({ content }: { content: SiteContent }) {
   const testimonials = await getPublicTestimonials();
+  const section = content.home.testimonials;
+  if (!section.enabled) return null;
 
   return (
     <section className="section-pad border-b border-ink-900/10">
       <div className="container-page">
-        <SectionHeading title="What Our Clients Say" />
+        <SectionHeading title={section.title} />
 
         {testimonials.length === 0 ? (
           <div className="mt-10 rounded-md border border-dashed border-ink-900/15 bg-paper-soft px-8 py-14 text-center">
             <p className="mx-auto max-w-md text-[15px] text-ink-500">
-              Client testimonials will appear here as we launch our first projects.
+              {section.emptyMessage}
             </p>
           </div>
         ) : (

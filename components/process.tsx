@@ -1,15 +1,18 @@
 import { SectionHeading } from "@/components/section-heading";
 import { CtaButton } from "@/components/cta-button";
-import { processSteps } from "@/lib/data";
+import type { SiteContent } from "@/lib/site-content";
 
-export function Process() {
+export function Process({ content }: { content: SiteContent }) {
+  const section = content.home.process;
+  if (!section.enabled) return null;
+
   return (
     <section id="process" className="section-pad scroll-mt-[65px] border-b border-ink-900/10 bg-paper-soft">
       <div className="container-page">
-        <SectionHeading title="A Simple Process" />
+        <SectionHeading title={section.title} />
 
         <div className="mt-14 grid gap-8 sm:grid-cols-2 md:grid-cols-4">
-          {processSteps.map((step, i) => (
+          {content.collections.processSteps.map((step, i) => (
             <div key={step.number} className="relative pl-0">
               <span className="font-display text-3xl text-ink-900/20">
                 {step.number}
@@ -20,7 +23,7 @@ export function Process() {
               <p className="mt-2 text-[15px] leading-relaxed text-ink-500">
                 {step.description}
               </p>
-              {i < processSteps.length - 1 ? (
+              {i < content.collections.processSteps.length - 1 ? (
                 <span className="mt-6 hidden h-px w-full bg-ink-900/10 sm:block" />
               ) : null}
             </div>
@@ -28,7 +31,7 @@ export function Process() {
         </div>
 
         <div className="mt-14">
-          <CtaButton href="/contact">Start Your Project</CtaButton>
+          <CtaButton href={section.ctaHref}>{section.ctaLabel}</CtaButton>
         </div>
       </div>
     </section>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import type { Project } from "@/lib/admin-data";
 import { PROJECT_STATUSES } from "@/lib/constants";
 import { initialSaveFormState } from "@/lib/admin-form-state";
@@ -9,7 +9,7 @@ import { SaveButton, FormStatusBanner } from "@/components/admin/form-status";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 
 export function ProjectForm({ project }: { project?: Project }) {
-  const [state, formAction] = useFormState(saveProject, initialSaveFormState);
+  const [state, formAction] = useActionState(saveProject, initialSaveFormState);
 
   return (
     <form action={formAction} className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">

@@ -1,32 +1,35 @@
 import type { Metadata } from "next";
 import { CtaButton } from "@/components/cta-button";
-import { services } from "@/lib/data";
+import { getSiteContent } from "@/lib/site-content";
 
-export const metadata: Metadata = {
-  title: "Services",
-  description:
-    "Business websites, landing pages, website redesigns, and hosting & deployment for Nigerian businesses.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { content } = await getSiteContent();
+  return {
+    title: content.pages.services.seoTitle,
+    description: content.pages.services.seoDescription,
+  };
+}
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const { content } = await getSiteContent();
+  const page = content.pages.services;
+
   return (
     <>
       <section className="border-b border-ink-900/10 section-pad !pb-14">
         <div className="container-page">
           <h1 className="max-w-2xl font-display text-4xl leading-[1.15] text-ink-900 md:text-5xl">
-            Websites and landing pages built for how your business actually
-            operates.
+            {page.title}
           </h1>
           <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-ink-500">
-            We currently focus on four services — each one aimed at helping
-            Nigerian businesses look credible online and reach more customers.
+            {page.description}
           </p>
         </div>
       </section>
 
       <section className="section-pad">
         <div className="container-page space-y-16">
-          {services.map((service) => (
+          {content.collections.services.map((service) => (
             <div
               key={service.slug}
               id={service.slug}
@@ -39,8 +42,8 @@ export default function ServicesPage() {
                 <p className="mt-3 text-[15px] leading-relaxed text-ink-500">
                   {service.description}
                 </p>
-                <CtaButton href="/contact" variant="secondary" className="mt-6">
-                  Talk to Us
+                <CtaButton href={page.ctaHref} variant="secondary" className="mt-6">
+                  {page.ctaLabel}
                 </CtaButton>
               </div>
 

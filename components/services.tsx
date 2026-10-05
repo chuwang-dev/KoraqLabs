@@ -1,21 +1,24 @@
 import Link from "next/link";
 import { SectionHeading } from "@/components/section-heading";
-import { services } from "@/lib/data";
+import type { SiteContent } from "@/lib/site-content";
 import { IconLayout, IconTarget, IconRefresh, IconServer, IconArrowUpRight } from "@/components/icons";
 
 const icons = [IconLayout, IconTarget, IconRefresh, IconServer];
 
-export function Services() {
+export function Services({ content }: { content: SiteContent }) {
+  const section = content.home.services;
+  if (!section.enabled) return null;
+
   return (
     <section className="section-pad border-b border-ink-900/10">
       <div className="container-page">
         <SectionHeading
-          title="What We Build"
-          supporting="From a simple landing page to a complete business website, we build digital experiences designed around your customers."
+          title={section.title}
+          supporting={section.supporting}
         />
 
         <div className="mt-14 grid gap-px overflow-hidden rounded-md border border-ink-900/10 bg-ink-900/10 sm:grid-cols-2">
-          {services.map((service, i) => {
+          {content.collections.services.map((service, i) => {
             const Icon = icons[i % icons.length];
             return (
               <div key={service.slug} className="bg-paper p-8">
@@ -30,7 +33,7 @@ export function Services() {
                   href={`/services#${service.slug}`}
                   className="mt-5 inline-flex items-center gap-1 text-[14px] font-medium text-ink-900 hover:text-signal-600"
                 >
-                  Learn more
+                  {section.linkLabel}
                   <IconArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
               </div>

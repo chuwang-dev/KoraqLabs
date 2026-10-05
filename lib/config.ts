@@ -8,8 +8,8 @@ export const siteConfig = {
     "Koraq Labs builds modern websites and landing pages for Nigerian businesses.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://koraqlabs.com",
   email: process.env.EMAIL_TO ?? "koraqlabs@gmail.com",
-  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "2348143832354",
-  whatsappDisplay: "0814 383 2354",
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "2348107342853",
+  whatsappDisplay: "0810 734 2853",
   brochurePath: "/brochure/koraq-labs-company-profile.pdf",
 };
 

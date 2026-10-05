@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { footerNav } from "@/lib/config";
 import { getSiteSettings } from "@/lib/site-settings";
+import type { SiteContent } from "@/lib/site-content";
 
-export async function Footer() {
+export async function Footer({ content }: { content: SiteContent }) {
   const { settings } = await getSiteSettings();
 
   return (
@@ -17,9 +17,9 @@ export async function Footer() {
           </div>
 
           <div>
-            <p className="text-sm font-medium text-ink-300">Site</p>
+            <p className="text-sm font-medium text-ink-300">{content.navigation.footerSiteHeading}</p>
             <ul className="mt-4 flex flex-col gap-3">
-              {footerNav.map((item) => (
+              {content.navigation.footer.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -34,11 +34,16 @@ export async function Footer() {
           </div>
 
           <div>
-            <p className="text-sm font-medium text-ink-300">Get in touch</p>
+            <p className="text-sm font-medium text-ink-300">{content.navigation.footerContactHeading}</p>
             <ul className="mt-4 flex flex-col gap-3 text-[15px] text-ink-200">
               <li>
                 <a href={`https://wa.me/${settings.whatsappNumber}`} className="hover:text-paper">
-                  WhatsApp {settings.whatsappDisplay}
+                  {content.pages.contact.whatsappLabel} {settings.whatsappDisplay}
+                </a>
+              </li>
+              <li>
+                <a href={`tel:+${settings.whatsappNumber}`} className="hover:text-paper">
+                  {content.pages.contact.phoneLabel} {settings.whatsappDisplay}
                 </a>
               </li>
               <li>
@@ -66,7 +71,7 @@ export async function Footer() {
         </div>
 
         <div className="mt-14 border-t border-paper/10 pt-6 text-sm text-ink-400">
-          © 2026 Koraq Labs. All rights reserved.
+          © {new Date().getFullYear()} {settings.name}. {content.navigation.copyright}
         </div>
       </div>
     </footer>

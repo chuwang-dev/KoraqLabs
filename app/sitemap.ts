@@ -1,9 +1,12 @@
 import type { MetadataRoute } from "next";
-import { portfolioItems } from "@/lib/data";
+import { getPublicPortfolio } from "@/lib/public-data";
 import { getSiteSettings } from "@/lib/site-settings";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { settings } = await getSiteSettings();
+  const [{ settings }, portfolioItems] = await Promise.all([
+    getSiteSettings(),
+    getPublicPortfolio(),
+  ]);
   const now = new Date();
 
   const staticRoutes = ["", "/services", "/work", "/about", "/faq", "/contact", "/privacy"].map(
