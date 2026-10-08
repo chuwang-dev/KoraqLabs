@@ -57,7 +57,10 @@ export async function generateMetadata(): Promise<Metadata> {
       description: settings.description,
     },
     icons: {
-      icon: "/icons/favicon.svg",
+      icon: [
+        { url: "/icons/favicon-32.png", type: "image/png", sizes: "32x32" },
+        { url: "/icons/favicon-64.png", type: "image/png", sizes: "64x64" },
+      ],
     },
     manifest: "/site.webmanifest",
   };
