@@ -3,10 +3,10 @@ import Image from "next/image";
 import { CtaButton } from "@/components/cta-button";
 
 const credentials = [
-  "Linux, DevOps & Clouds, Bloomy Technologies (2026)",
-  "Cloud Computing, TechCrush (2026)",
-  "Business Analysis Masterclass (2025)",
-  "PHRi (2025)",
+  "Linux, DevOps & Clouds, Bloomy Technologies",
+  "Cloud Computing, TechCrush",
+  "Business Analysis Masterclass",
+  "PHRi",
   "TechCrush Alumni Buildathon 3.0, Cloud & DevOps track, Cohort 6",
 ];
 
