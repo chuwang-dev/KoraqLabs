@@ -100,7 +100,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${fraunces.variable} ${manrope.variable}`}>
-      <body className="flex min-h-screen flex-col font-sans">
+      <body className="flex min-h-screen flex-col bg-[#F9F6F2] font-sans text-ink-900">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
