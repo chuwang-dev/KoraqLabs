@@ -26,35 +26,41 @@ const manrope = Manrope({
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getSiteSettings();
+
+  // Search-focused homepage title. The on-site tagline (settings.tagline) is
+  // left alone so the footer and loader still read "Digital products, built
+  // to work." Keep this under ~60 characters so Google doesn't truncate it.
+  const homeTitle = `${settings.name} — Website Design for Nigerian Businesses`;
+
   return {
     metadataBase: new URL(settings.url),
     title: {
-      default: `${settings.name} — ${settings.tagline}`,
+      default: homeTitle,
       template: `%s — ${settings.name}`,
     },
+    // Edit this in /admin → Settings (the "description" field).
     description: settings.description,
-    keywords: [
-      "website development Nigeria",
-      "website design Nigeria",
-      "business website Nigeria",
-      "website design Abuja",
-      "website developer Lagos",
-      "website development Lagos",
-      "landing page design Nigeria",
-      "web development company Nigeria",
-    ],
+    // Each page gets its own canonical URL (resolved against metadataBase).
+    alternates: {
+      canonical: "./",
+    },
+    // meta keywords removed: Google ignores them.
+    //
+    // openGraph/twitter title, description and url are intentionally NOT set
+    // here. Setting them in the root layout made every page (Services, Work,
+    // case studies) share the homepage's values. Without them, link scrapers
+    // (WhatsApp, Facebook, LinkedIn, X) fall back to each page's own <title>
+    // and meta description.
+    //
+    // The share image comes from a file: add a 1200x630 PNG at
+    // app/opengraph-image.png and Next.js attaches it to every page.
     openGraph: {
-      title: `${settings.name} — ${settings.tagline}`,
-      description: settings.description,
-      url: settings.url,
       siteName: settings.name,
       locale: "en_NG",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${settings.name} — ${settings.tagline}`,
-      description: settings.description,
     },
     icons: {
       icon: [
@@ -76,9 +82,31 @@ export default async function RootLayout({
     getSiteContent(),
   ]);
 
+  // Basic structured data so Google can understand the business.
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: settings.name,
+    url: settings.url,
+    description: settings.description,
+    areaServed: "NG",
+    serviceType: [
+      "Website design",
+      "Website development",
+      "Landing page design",
+      "Website redesign",
+    ],
+  };
+
   return (
     <html lang="en" className={`${fraunces.variable} ${manrope.variable}`}>
       <body className="flex min-h-screen flex-col font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd),
+          }}
+        />
         {process.env.NEXT_PUBLIC_GA_ID ? (
           <ConsentGatedGA gaId={process.env.NEXT_PUBLIC_GA_ID} />
         ) : null}

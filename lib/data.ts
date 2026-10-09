@@ -102,6 +102,8 @@ export const portfolioItems: PortfolioItem[] = [
       "A refined fine-dining website experience designed to showcase the restaurant, guide guests through its menu, and encourage reservations.",
     technologies: ["HTML", "CSS", "JavaScript"],
     isPlaceholder: false,
+    // Verified: this URL serves the Casifla site. If www.casifla.com is live,
+    // switch to it — a real domain looks far better than an onrender.com address.
     liveUrl: "https://gitops-infrastructure.onrender.com",
     image: "/images/casifla-landing.png",
   },
@@ -113,6 +115,7 @@ export const portfolioItems: PortfolioItem[] = [
       "A focused auto-parts and repair website that helps dealers, fleets, and drivers explore parts, discover services, and place enquiries through WhatsApp.",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
     isPlaceholder: false,
+    // Verified: this URL serves the AutoForge site. Consider a custom domain.
     liveUrl: "https://casi-check.vercel.app/",
     image: "/images/autoforge-landing.png",
   },
@@ -203,6 +206,7 @@ export const pricingPackages: PricingPackage[] = [
       "Basic SEO",
       "Domain connection",
       "Deployment",
+      "Typical delivery: 2–7 days",
     ],
     ctaLabel: "Get Started",
     ctaHref: "/contact",
@@ -224,6 +228,7 @@ export const pricingPackages: PricingPackage[] = [
       "Analytics",
       "Domain connection",
       "Deployment",
+      "Typical delivery: 2–3 weeks",
     ],
     ctaLabel: "Get Started",
     ctaHref: "/contact",
@@ -242,6 +247,7 @@ export const pricingPackages: PricingPackage[] = [
       "Advanced forms",
       "Admin functionality",
       "Custom deployment",
+      "Timeline agreed in your quote",
     ],
     ctaLabel: "Talk to Us",
     ctaHref: "/contact",
@@ -281,39 +287,54 @@ export type FaqItem = {
   answer: string;
 };
 
+// NOTE: getPublicFaqs() uses published FAQs from the admin database when any
+// exist, and only falls back to this list otherwise. Keep both in sync: if you
+// edit an answer in /admin/faqs, edit it here too (or this old copy may
+// reappear if the database is ever cleared).
 export const faqItems: FaqItem[] = [
   {
-    question: "How long does a website take?",
+    question: "Can you really create my website in 3 weeks?",
     answer:
-      "Most standard business websites can be completed within 1–2 weeks depending on the scope and availability of content.",
+      "Yes, for most landing pages and standard business websites, once we have your content. Larger or custom projects take longer, and we'll give you a clear timeline in your quote.",
   },
   {
-    question: "Do you provide domains and hosting?",
+    question: "How much does a website cost?",
     answer:
-      "Yes. We can help configure your domain, hosting, SSL, and deployment.",
+      "Landing pages start from ₦250,000 and business websites from ₦750,000. Custom projects are quoted after a short call. Domain registration and hosting are billed separately, and we'll list them clearly in your written quote.",
   },
   {
-    question: "Can you redesign my existing website?",
-    answer: "Yes.",
-  },
-  {
-    question: "Can you build a website for a new business?",
+    question: "How long will it take?",
     answer:
-      "Yes. We can help structure the website even if your business is just getting started.",
+      "A landing page usually takes 2 to 7 days, and a business website 2 to 3 weeks, once we have your content and logo. Delays usually come from waiting on content, so the sooner you send it, the sooner we launch.",
   },
   {
-    question: "Will my website work on mobile?",
-    answer: "Yes. All websites should be designed responsively.",
-  },
-  {
-    question: "Can you maintain my website after launch?",
+    question: "What do you need from me to start?",
     answer:
-      "Yes. Maintenance and support is available as an optional recurring service.",
+      "Your business name and logo, a short description of your services, photos, contact details, and any websites you like. If you don't have written content yet, tell us and we'll guide you.",
   },
   {
-    question: "Can you build web applications?",
+    question: "How does payment work?",
     answer:
-      "Yes, for projects requiring functionality beyond a standard marketing website, Koraq Labs can develop custom web applications.",
+      "70% to start, 30% before launch. You'll get a written quote before we begin.",
+  },
+  {
+    question: "Do I own the website?",
+    answer:
+      "Yes. You own the design, the content and your domain name, and when the project is complete we hand over your hosting and domain access details.",
+  },
+  {
+    question: "What about hosting and maintenance?",
+    answer:
+      "We offer hosting and ongoing support on a monthly or yearly plan, or we can hand everything over so you can host it yourself. Ask us for current rates when you request a quote.",
+  },
+  {
+    question: "Will my website work on phones?",
+    answer: "Yes. Every site is built mobile-first and tested on real phones.",
+  },
+  {
+    question: "Can I take bookings or orders on the site?",
+    answer:
+      "Yes, through WhatsApp, forms, or a custom build. Tell us what you need on the contact page.",
   },
 ];
 
