@@ -17,6 +17,7 @@ export const defaultSiteContent = {
   home: {
     sectionOrder: [
       "hero",
+      "about",
       "services",
       "industries",
       "portfolio",
@@ -27,6 +28,13 @@ export const defaultSiteContent = {
       "faq",
       "contact",
     ],
+    about: {
+      enabled: true,
+      eyebrow: "Lead developer • founder",
+      title: "I build modern websites for businesses that want to look credible and grow without agency clutter.",
+      description:
+        "Hi, I'm Chuwang Emmanuel, Lead Developer at Koraq Labs in Lagos. I build modern, professional websites that help small businesses win trust and grow online without paying agency-level prices.",
+    },
     hero: {
       enabled: true,
       eyebrow: "Koraq Labs",

@@ -1,4 +1,5 @@
 import { Hero } from "@/components/hero";
+import { AboutSection } from "@/components/about-section";
 import { Services } from "@/components/services";
 import { Industries } from "@/components/industries";
 import { Portfolio } from "@/components/portfolio";
@@ -15,6 +16,7 @@ export default async function HomePage() {
   const renderSection = (section: string) => {
     switch (section) {
       case "hero": return <Hero key={section} content={content} />;
+      case "about": return <AboutSection key={section} />;
       case "services": return <Services key={section} content={content} />;
       case "industries": return <Industries key={section} content={content} />;
       case "portfolio": return <Portfolio key={section} content={content} />;
